@@ -1,0 +1,1498 @@
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scratchlet - Market</title>
+<link href="https://fonts.googleapis.com/css2?family=Titan+One&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link rel="shortcut icon" href="https://i.postimg.cc/Wbsrt82t/Scratchlet-Icon.png">
+<style>
+* {margin:0; padding:0; box-sizing:border-box;}
+body {
+    font-family: "Nunito", sans-serif;
+    background: linear-gradient(rgba(210,180,140,0.15) 1px1000,transparent 1px),
+                linear-gradient(90deg,rgba(210,180,140,0.15) 1px,transparent 1px),
+                linear-gradient(135deg,#FF8C00 0%,#FFA500 100%);
+    background-size: 40px 40px;
+    padding: 20px;
+    min-height: 100vh;
+    color: white;
+}
+
+.card, .instant-card {
+  max-width: none; 
+  width: 160px;
+  min-width: 160px;
+  height: 320px;
+  min-height: 320px;
+  box-sizing: border-box;
+}
+
+.header {display:flex; justify-content:space-between; align-items:center; padding:20px; background:rgba(255,255,255,0.1); border-radius:15px; backdrop-filter:blur(10px); border:2px solid rgba(255,255,255,0.2); margin-bottom:30px;}
+.logo-text {font-family:"Titan One",sans-serif; font-size:2.5em; color:#fff; text-shadow:2px 2px 4px rgba(0,0,0,0.3);}
+.nav-buttons {display:flex; gap:12px;}
+.nav-btn {background: rgba(255,255,255,0.9); color: #FF8C00; padding: 10px 20px; border: none; border-radius: 20px; cursor: pointer; font-weight: 600; text-decoration:none; transition: all 0.3s ease; box-shadow:0 4px 12px rgba(0,0,0,0.2);}
+.nav-btn:hover {background:white; transform:translateY(-2px); box-shadow:0 6px 18px rgba(0,0,0,0.3);}
+.market-container {width:100%; max-width:900px; margin:0 auto; padding:20px; text-align:center;}
+.market-title {font-family:"Titan One"; font-size:3em; color:#fff; text-shadow:3px 3px 6px rgba(0,0,0,0.3); margin-bottom:20px;}
+.user-info-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 20px 0;
+}
+.user-info {
+    background: rgba(255,255,255,0.1);
+    padding: 15px 25px;
+    border-radius: 15px;
+    display: inline-block;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255,255,255,0.2);
+    position: relative;
+    min-width: 180px;
+}
+.market-cards {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    justify-items: center;
+    align-items: start;
+}
+.card, .instant-card {
+    background: rgba(255,255,255,0.15);
+    border-radius:20px;
+    box-shadow:0 6px 15px rgba(0,0,0,0.2);
+    border:3px solid rgba(255,255,255,0.3);
+    padding:18px;
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    transition: all 0.3s ease;
+    cursor:pointer;
+    backdrop-filter:blur(10px);
+    position: relative;
+}
+.card img, .instant-card img {width:100%; height:auto; border-radius:15px; box-shadow:0 6px 12px rgba(0,0,0,0.2);}
+.pack-name {font-family:'Titan One',cursive; font-size:1.2rem; color:white; text-shadow:2px 2px 4px rgba(0,0,0,0.3);}
+.pack-price {color: rgba(255,255,255,0.9); font-size:1em;}
+.open-btn,
+#addCoinBtn {
+    padding:10px 20px;
+    background:rgba(255,255,255,0.9);
+    color:#FF8C00;
+    border:none;
+    border-radius:15px;
+    cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,0.2);
+    font-size:1em;
+    font-weight:700;
+    transition: all 0.3s ease;
+    margin-top:auto;
+    align-self: stretch;
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: 18px;
+}
+.open-btn:hover:enabled,
+#addCoinBtn:hover:enabled {background:white; transform:translateY(-2px); box-shadow:0 6px 18px rgba(0,0,0,0.3);}
+.open-btn:disabled,
+#addCoinBtn:disabled {opacity:0.6; cursor:not-allowed;}
+.instant-card {
+    height: 220px;
+    min-height: 220px;
+    width: 140px;
+    min-width: 140px;
+    gap: 8px;
+    padding: 12px;
+}
+#resultsContainer {position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); display:flex; flex-direction:column; gap:15px; align-items:center; z-index:2003;}
+.result-card {background: rgba(255,255,255,0.95); border-radius:20px; overflow:hidden; box-shadow:0 15px 35px rgba(0,0,0,0.3); width:350px; height:350px; display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:0; transform:scale(0.8); transition: opacity 0.35s ease, transform 0.35s ease; color:black; padding:20px; position:relative;}
+.result-card.show {opacity:1; transform:scale(1);}
+.result-card.hide {opacity:0; transform:scale(0.8);}
+.overlay {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2000; opacity:0; pointer-events:none; transition:opacity 0.3s ease; backdrop-filter:blur(5px);}
+.overlay.active {opacity:1; pointer-events:all;}
+.modal {position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0.8); background: linear-gradient(135deg,#fff8dc,#ffffff); border:3px solid #FF8C00; border-radius:20px; box-shadow:0 20px 40px rgba(0,0,0,0.4); padding:30px; z-index:2002; display:none; flex-direction:column; align-items:center; gap:20px; min-width:300px; text-align:center; animation: popIn 0.3s ease forwards;}
+@keyframes popIn {from {transform:translate(-50%,-50%) scale(0.8); opacity:0;} to {transform:translate(-50%,-50%) scale(1); opacity:1;}}
+.modal h2 {font-family:'Titan One'; font-size:2em; margin:0; color:#FF8C00; text-shadow:1px 1px 2px rgba(0,0,0,0.2);}
+.modal p {margin:0; font-size:1.1em; color:#333;}
+.modal-buttons {display:flex; gap:15px; flex-wrap:wrap; justify-content:center;}
+.modal-btn {padding:12px 25px; border:none; border-radius:15px; cursor:pointer; font-weight:700; font-size:1em; transition:all 0.3s ease;}
+.modal-btn.primary {background:#FF8C00; color:white;}
+.modal-btn.secondary {background:rgba(255,255,255,0.9); color:#FF8C00; border:2px solid #FF8C00;}
+.modal-btn:hover {transform:translateY(-2px); box-shadow:0 6px 15px rgba(0,0,0,0.2);}
+.footer {text-align:center; margin-top:50px; padding:20px; color:rgba(255,255,255,0.7); font-size:0.9em;}
+#addCoinBtn {
+    display:none;
+    position: static;
+    margin: 18px auto 0 auto;
+    width: auto;
+    left: unset;
+    right: unset;
+    bottom: unset;
+    align-self: center;
+}
+@media (max-width:1200px){
+    .market-cards {grid-template-columns: repeat(4, 1fr);}
+    .card, .instant-card {width: 140px; min-width:140px; height:280px; min-height:280px;}
+    .instant-card {height: 180px; min-height: 180px; width: 120px; min-width: 120px;}
+}
+@media (max-width:900px){
+    .market-cards {grid-template-columns: repeat(3, 1fr);}
+    .card, .instant-card {width: 120px; min-width:120px; height:240px; min-height:240px;}
+    .instant-card {height: 140px; min-height: 140px; width: 100px; min-width: 100px;}
+}
+@media (max-width:768px){
+    .header{flex-direction:column;gap:15px;text-align:center;}
+    .nav-buttons{flex-wrap:wrap;justify-content:center;}
+    .market-title{font-size:2.2em;}
+    .modal-buttons{flex-direction:column;}
+    .market-cards {grid-template-columns: repeat(2, 1fr);}
+    .card, .instant-card {width: 100px; min-width:100px; height:200px; min-height:200px;}
+    .instant-card {height: 100px; min-height: 100px; width: 80px; min-width: 80px;}
+}
+#rarityList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 300px;
+    overflow-y: auto;
+    width: 100%;
+}
+#rarityList::-webkit-scrollbar {
+    width: 8px;
+}
+
+#rarityList::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+}
+#rarityList::-webkit-scrollbar-thumb {
+    background: #FF8C00;
+    border-radius: 10px;
+}
+#rarityList::-webkit-scrollbar-thumb:hover {
+    background: #FFA500;
+}
+</style>
+</head>
+
+<body style="background: linear-gradient(rgba(255, 140, 0, 0.15) 1px, transparent 1px) 0% 0% / 40px 40px, linear-gradient(90deg, rgba(255, 165, 0, 0.15) 1px, transparent 1px), linear-gradient(135deg, rgb(255, 140, 0) 0%, rgb(255, 165, 0) 100%);">
+<div class="header">
+    <div class="logo"><div class="logo-text">Scratchlet</div></div>
+    <div class="nav-buttons">
+    <a href="https://scratchlet-app.neocities.org/home" class="nav-btn">🏠 Home</a>
+       <a href="https://scratchlet-app.neocities.org/stats" class="nav-btn">📊 Stats</a>
+            <a href="https://scratchlet-app.neocities.org/market" class="nav-btn"> 🛒 Market</a>
+           <a href="https://scratchlet-app.neocities.org/blooks" class="nav-btn">😺 Blooks</a>
+            <a href="https://scratchlet-app.neocities.org/settings" class="nav-btn">⚙️ Settings</a>
+            <a href="https://scratchlet-app.neocities.org/chat" class="nav-btn">💬 Chat</a>
+            <a href="https://scratchlet-app.neocities.org" class="nav-btn" style="background: rgba(255, 0, 0, 0.3); color: white;">🚪 Logout</a>
+    </div>
+</div>
+
+<div class="market-container">
+    <h1 class="market-title">Market</h1>
+    <div class="user-info">
+        <strong>Coins:</strong> <span id="userCoins">1000</span>
+    </div>
+    <button id="addCoinBtn" class="open-btn">+💰 Add Coins</button>
+    
+
+    <div class="instant-card" style="margin:0 auto 20px auto;">
+        <h2 class="pack-name">Instant Open</h2>
+        <p class="pack-price">Toggle instant pack opening</p>
+        <button class="open-btn" id="instantToggleBtn">Toggle Instant</button>
+    </div>
+
+<div class="market-cards">
+    <!-- Breakfast Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/8Cs9nSzs/Breakfast.png" alt="Breakfast Pack">
+        <h2 class="pack-name">Breakfast Pack</h2>
+        <p class="pack-price">Price: 15 coins</p>
+        <button class="open-btn" onclick="startPack('breakfast', this)">🍳 Open</button>
+    </div>
+
+    <!-- Wonderland Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/Tw8Sgw5V/Wonderland.png" alt="Wonderland Pack">
+        <h2 class="pack-name">Wonderland Pack</h2>
+        <p class="pack-price">Price: 15 coins</p>
+        <button class="open-btn" onclick="startPack('wonderland', this)">🎩 Open</button>
+    </div>
+
+    <!-- Medieval Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/63X9CPzT/Medieval.png" alt="Medieval Pack">
+        <h2 class="pack-name">Medieval Pack</h2>
+        <p class="pack-price">Price: 15 coins</p>
+        <button class="open-btn" onclick="startPack('medieval', this)">⚔️ Open</button>
+    </div>
+
+    <!-- Space Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/pTK1FWL5/Space.png" alt="Space Pack">
+        <h2 class="pack-name">Space Pack</h2>
+        <p class="pack-price">Price: 20 coins</p>
+        <button class="open-btn" onclick="startPack('space', this)">🚀 Open</button>
+    </div>
+
+     <!-- Bot Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/Qxmr52td/Bot.png" alt="Bot Pack">
+        <h2 class="pack-name">Bot Pack</h2>
+        <p class="pack-price">Price: 20 coins</p>
+        <button class="open-btn" onclick="startPack('bot', this)">🤖 Open</button>
+    </div>
+
+     <!-- Aquatic Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/J40WNTB3/Aquatic.png" alt="Aquatic Pack">
+        <h2 class="pack-name">Aquatic Pack</h2>
+        <p class="pack-price">Price: 20 coins</p>
+        <button class="open-btn" onclick="startPack('Aquatic', this)">🐟 Open</button>
+    </div>
+
+     <!-- Safari Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/SRgRZDq0/Safari.png" alt="Aquatic Pack">
+        <h2 class="pack-name">Safari Pack</h2>
+        <p class="pack-price">Price: 20 coins</p>
+        <button class="open-btn" onclick="startPack('safari', this)">🐯 Open</button>
+    </div>
+
+     <!-- Dino Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/vHQhKB7b/Dino.png" alt="Aquatic Pack">
+        <h2 class="pack-name">Dino Pack</h2>
+        <p class="pack-price">Price: 25 coins</p>
+        <button class="open-btn" onclick="startPack('dino', this)">🦖 Open</button>
+    </div>
+
+      <!-- Ice Monsters Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/XNDKs8vc/Ice-Monsters.png" alt="icemonster Pack">
+        <h2 class="pack-name">Ice Monsters Pack</h2>
+        <p class="pack-price">Price: 25 coins</p>
+        <button class="open-btn" onclick="startPack('icemonsters', this)">🧊 Open</button>
+    </div>
+
+      <!-- Outback Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/vZqcyQ4J/Outback.png" alt="Outback Pack">
+        <h2 class="pack-name">Outback Pack</h2>
+        <p class="pack-price">Price: 25 coins</p>
+        <button class="open-btn" onclick="startPack('outback', this)">🦘 Open</button>
+    </div>
+
+    <!--Pirate Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/cJMqrWqh/Pirate.png" alt="Pirate Pack">
+        <h2 class="pack-name">Pirate Pack</h2>
+        <p class="pack-price">Price: 25 coins</p>
+        <button class="open-btn" onclick="startPack('pirate', this)">🏴‍☠️ Open</button>
+    </div>
+
+    <!--Bug Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/9MN5dBLN/Bug.png" alt="Bug Pack">
+        <h2 class="pack-name">Bug Pack</h2>
+        <p class="pack-price">Price: 25 coins</p>
+        <button class="open-btn" onclick="startPack('bug', this)">🐞 Open</button>
+    </div>
+
+    <!--Lunch Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/HnZK9Tdg/Lunch-Pack.png" alt="Lunch Pack">
+        <h2 class="pack-name">Lunch Pack</h2>
+        <p class="pack-price">Price: 25 coins</p>
+        <button class="open-btn" onclick="startPack('lunch', this)">🍕 Open</button>
+    </div>
+
+    <!--Toy Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/MZMy6WjJ/Toys.png" alt="Toy Pack">
+        <h2 class="pack-name">Toy Pack</h2>
+        <p class="pack-price">Price: 25 coins</p>
+        <button class="open-btn" onclick="startPack('toy', this)">🧸 Open</button>
+    </div>
+
+    <!--Art Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/XvqLStM2/Art.png" alt="Art Pack">
+        <h2 class="pack-name">Art Pack</h2>
+        <p class="pack-price">Price: 25 coins</p>
+        <button class="open-btn" onclick="startPack('art', this)">🎨 Open</button>
+    </div>
+
+    <!--Blizzard Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/gj7vbJK0/Blizzard.png" alt="Blizzard Pack">
+        <h2 class="pack-name">Blizzard Pack</h2>
+        <p class="pack-price">Price: 25 coins</p>
+        <button class="open-btn" onclick="startPack('blizzard', this)">🎄 Open</button>
+    </div>
+
+    <!--Spooky Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/ZKXB7dw9/Spooky.png" alt="Spooky Pack">
+        <h2 class="pack-name">Spooky Pack</h2>
+        <p class="pack-price">Price: 25 coins</p>
+        <button class="open-btn" onclick="startPack('spooky', this)">🎃 Open</button>
+    </div>
+
+    <!--Autumn Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/pdhGF7s9/Autumn.png" alt="Autumn Pack">
+        <h2 class="pack-name">Autumn Pack</h2>
+        <p class="pack-price">Price: 25 coins</p>
+        <button class="open-btn" onclick="startPack('autumn', this)">🍁 Open</button>
+    </div>
+
+    <!--Emoji Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/XvjFMyCn/Emoji.png" alt="Emoji Pack">
+        <h2 class="pack-name">Emoji Pack</h2>
+        <p class="pack-price">Price: 30 coins</p>
+        <button class="open-btn" onclick="startPack('emoji', this)">😃 Open</button>
+    </div>
+
+    <!--Fast Food Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/qMg34CQL/Fast-Food.png" alt="Fast Food Pack">
+        <h2 class="pack-name">Fast Food Pack</h2>
+        <p class="pack-price">Price: 30 coins</p>
+        <button class="open-btn" onclick="startPack('fastfood', this)">🍔 Open</button>
+    </div>
+
+    <!--Crossy Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/c4HT8C19/Crossy.png" alt="Crossy Pack">
+        <h2 class="pack-name">Crossy Pack</h2>
+        <p class="pack-price">Price: 30 coins</p>
+        <button class="open-btn" onclick="startPack('crossy', this)">⏹️ Open</button>
+    </div>
+    
+    <!--Hackers Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/C5jZRjBB/Hackers.png" alt="Hackers Pack">
+        <h2 class="pack-name">Hackers Pack</h2>
+        <p class="pack-price">Price: 30 coins</p>
+        <button class="open-btn" onclick="startPack('hackers', this)">👾 Open</button>
+    </div>
+
+    <!--Scratch Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/cL5hhBbp/Scratch.png" alt="Scratch Pack">
+        <h2 class="pack-name">Scratch Pack</h2>
+        <p class="pack-price">Price: 30 coins</p>
+        <button class="open-btn" onclick="startPack('scratch', this)">😺 Open</button>
+    </div>
+
+    <!--Video Game Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/Y9YZNpm2/Video-Game.png" alt="Video Game Pack">
+        <h2 class="pack-name">Video Game Pack</h2>
+        <p class="pack-price">Price: 30 coins</p>
+        <button class="open-btn" onclick="startPack('videogame', this)">🎮 Open</button>
+    </div>
+
+    <!--OG Pack -->
+    <div class="card">
+        <img src="https://i.postimg.cc/X7ttL5DD/OG.png" alt="OG Pack">
+        <h2 class="pack-name">OG Pack</h2>
+        <p class="pack-price">Price: 35 coins</p>
+        <button class="open-btn" onclick="startPack('og', this)">🪙 Open</button>
+    </div>
+</div>
+
+<div id="resultsContainer"></div>
+<div class="overlay" id="overlay"></div>
+
+<div class="modal" id="confirmModal" style="display: none;">
+    <h2>Open Pack?</h2>
+    <p id="modalText">Want to open Wonderland Pack for 15 coins?</p>
+    <div class="modal-buttons">
+        <button class="modal-btn primary" id="yesBtn">Yes</button>
+        <button class="modal-btn secondary" id="infoBtn">Info</button>
+        <button class="modal-btn secondary" id="noBtn">No</button>
+    </div>
+</div>
+
+<div class="modal" id="infoModal">
+    <h2>Pack Info</h2>
+    <ul id="rarityList" style="list-style:none;padding:0;margin:0;"></ul>
+    <button class="modal-btn primary" onclick="closeInfoModal()">Close</button>
+</div>
+
+<div class="footer">
+<p>Scratchlet © 2024 • The Ultimate Blooket Remix Experience</p>
+</div>
+<script>
+function initUserData() {
+    if (!localStorage.getItem('userData')) {
+        localStorage.setItem('userData', JSON.stringify({
+            username: "SuperMemes_64",
+            coins: 1000,
+            unlockedBlooks: [],
+            blookCounts: {},
+            totalPacksOpened: 0
+        }));
+    }
+    return JSON.parse(localStorage.getItem('userData'));
+}
+
+function loadUserData() {
+    const data = initUserData();
+    document.getElementById('userCoins').textContent = data.coins;
+    return data;
+}
+
+function saveUserData(data) {
+    localStorage.setItem('userData', JSON.stringify(data));
+}
+
+function updateUserStats(blook, cost) {
+    const userData = loadUserData();
+    userData.coins -= cost;
+
+    // Ensure blookCounts exists
+    if (!userData.blookCounts) userData.blookCounts = {};
+
+    // Track unlocked blooks + counts
+    if (!userData.unlockedBlooks.includes(blook.name)) {
+        userData.unlockedBlooks.push(blook.name);
+        userData.blookCounts[blook.name] = 1;
+    } else {
+        userData.blookCounts[blook.name] = (userData.blookCounts[blook.name] || 1) + 1;
+    }
+
+    userData.totalPacksOpened = (userData.totalPacksOpened || 0) + 1;
+
+    saveUserData(userData);
+    loadUserData();
+}
+
+function logout() {
+    localStorage.clear();
+    location.reload();
+}
+
+// --- Packs Data ---
+const packs = {
+    breakfast: { 
+        name: "Breakfast Pack",
+        cost: 15,
+        image: "https://i.postimg.cc/8Cs9nSzs/Breakfast.png",
+        background: "https://i.postimg.cc/jdK9YNSp/download.webp",
+        blooks: [
+            {name:"Toast",rarity:"Uncommon",color:"limegreen",chance:"12.5%",image:"https://i.postimg.cc/NGJcDp4N/toast.webp"},
+            {name:"Cereal",rarity:"Uncommon",color:"limegreen",chance:"12.5%",image:"https://i.postimg.cc/HsFCDnFX/cereal.webp"},
+            {name:"Yogurt",rarity:"Uncommon",color:"limegreen",chance:"12.5%",image:"https://i.postimg.cc/7hWrLZhv/yogurt.webp"},
+            {name:"Breakfast Combo",rarity:"Uncommon",color:"limegreen",chance:"12.5%",image:"https://i.postimg.cc/zfrZvMzf/breakfastcombo.webp"},
+            {name:"Orange Juice",rarity:"Uncommon",color:"limegreen",chance:"12.5%",image:"https://i.postimg.cc/vH4dNf2G/orangejuice.webp"},
+            {name:"Milk",rarity:"Uncommon",color:"limegreen",chance:"12.5%",image:"https://i.postimg.cc/0ym18xq3/milk.webp"},
+            {name:"Waffle",rarity:"Rare",color:"blue",chance:"9%",image:"https://i.postimg.cc/MGmkQDHm/waffle.webp"},
+            {name:"Pancakes",rarity:"Rare",color:"blue",chance:"9%",image:"https://i.postimg.cc/cC6PPGmF/pancakes.webp"},
+            {name:"French Toast",rarity:"Epic",color:"red",chance:"5%",image:"https://i.postimg.cc/QCPv3YYh/frenchtoast.webp"},
+            {name:"Pizza",rarity:"Epic",color:"red",chance:"2%",image:"https://i.postimg.cc/TwdzqDWM/pizza.webp"},
+        ]
+     },
+         wonderland: { 
+        name: "Wonderland Pack",
+        cost: 15,
+        image: "https://i.postimg.cc/Tw8Sgw5V/Wonderland.png",
+        background: "https://i.postimg.cc/qRdbg5WQ/wonderland-background.webp",
+        blooks: [
+            {name:"Two of Spades",rarity:"Uncommon",color:"limegreen",chance:"15.2%",image:"https://i.postimg.cc/X7nRspHx/twoofspades.webp"},
+            {name:"Eat Me",rarity:"Uncommon",color:"limegreen",chance:"15%",image:"https://i.postimg.cc/bvGc1WCh/eat.webp"},
+            {name:"Drink Me",rarity:"Uncommon",color:"limegreen",chance:"15%",image:"https://i.postimg.cc/6pbx2thc/drink.webp"},
+            {name:"Alice",rarity:"Uncommon",color:"limegreen",chance:"15%",image:"https://i.postimg.cc/RVRBmc6j/alice.webp"},
+            {name:"Queen of Hearts",rarity:"Uncommon",color:"limegreen",chance:"15%",image:"https://i.postimg.cc/SRfwyhsW-/queenofhearts.webp"},
+            {name:"Dormouse",rarity:"Rare",color:"blue",chance:"6.5%",image:"https://i.postimg.cc/fTZN1HLc/dormouse.webp"},
+            {name:"White Rabbit",rarity:"Rare",color:"blue",chance:"6.5%",image:"https://i.postimg.cc/jq6V6zXL/whiterabbit.webp"},
+            {name:"Cheshire Cat",rarity:"Rare",color:"blue",chance:"6.5%",image:"https://i.postimg.cc/1X0ZfFWV/cheshirecat.webp"},
+            {name:"Caterpillar",rarity:"Epic",color:"red",chance:"2.5%",image:"https://i.postimg.cc/9Xy283WX/caterpillar.webp"},
+            {name:"Mad Hatter",rarity:"Epic",color:"red",chance:"2.5%",image:"https://i.postimg.cc/G2YW5Yng/madhatter.webp"},
+            {name:"King of Hearts",rarity:"Legendary",color:"orange",chance:"0.3%",image:"https://i.postimg.cc/fb64CCp0/kingofhearts.webp"},
+            {name:"Knight of Hearts",rarity:"Chroma",color:"cyan",chance:"0.08%",image:"https://i.postimg.cc/xdNhXH8j/Knight-Of-Hearts.png"},
+            {name:"Royal Cat",rarity:"Chroma",color:"cyan",chance:"0.05%",image:"https://i.postimg.cc/1tpdHQDL/Royal-Cat.png"},
+            {name:"King Dog",rarity:"Chroma",color:"cyan",chance:"0.03%",image:"https://i.postimg.cc/m2V0JBK4/King-Dog.png"},
+            {name:"Wise Caterpillar",rarity:"Unique",color:"#008080",chance:"0.075%",image:"https://i.postimg.cc/x1WPzNGy/wisecaterpillar.webp"}
+        ]
+     },
+
+
+    medieval: {
+        name: "Medieval Pack",
+        cost: 15,
+        image: "https://i.postimg.cc/63X9CPzT/Medieval.png",
+        background: "https://i.postimg.cc/8z7PGMjk/medieval-background.webp",
+        blooks: [
+            {name:"Elf",rarity:"Uncommon",color:"limegreen",chance:"13.4%",image:"https://i.postimg.cc/VLLk73wC/elf.png"},
+            {name:"Witch",rarity:"Uncommon",color:"limegreen",chance:"13.4%",image:"https://i.postimg.cc/sD6Dbwf0/witch.png"},
+            {name:"Wizard",rarity:"Uncommon",color:"limegreen",chance:"13.4%",image:"https://i.postimg.cc/4413QXDG/wizard.png"},
+            {name:"Fairy",rarity:"Uncommon",color:"limegreen",chance:"13.4%",image:"https://i.postimg.cc/vTXHYvrT/fairy.png"},
+            {name:"Slime Monster",rarity:"Uncommon",color:"limegreen",chance:"13.4%",image:"https://i.postimg.cc/vBrZjyDW/slimemonster.png"},
+            {name:"Jester",rarity:"Rare",color:"blue",chance:"9%",image:"https://i.postimg.cc/Gtbmnfs6/jester.png"},
+            {name:"Dragon",rarity:"Rare",color:"blue",chance:"9%",image:"https://i.postimg.cc/XJSvQqNj/dragon.png"},
+            {name:"Queen",rarity:"Rare",color:"blue",chance:"9%",image:"https://i.postimg.cc/GmftTzZs/queen.png"},
+            {name:"Unicorn",rarity:"Epic",color:"red",chance:"5%",image:"https://i.postimg.cc/VNb6qn8Z/unicorn.png"},
+            {name:"King",rarity:"Legendary",color:"orange",chance:"1%",image:"https://i.postimg.cc/6pqTQF1X/king.png"},
+            {name:"Master Elf",rarity:"Chroma",color:"cyan",chance:"0.05%",image:"https://i.postimg.cc/J41GfsNt/masterelf.png"},
+            {name:"Agent Owl",rarity:"Chroma",color:"cyan",chance:"0.05%",image:"https://i.postimg.cc/1t5dxc3J/agentowl.png"},
+            {name:"Party Pig",rarity:"Chroma",color:"cyan",chance:"0.05%",image:"https://i.postimg.cc/W4rNFVGQ/partypig.png"},
+            {name:"Wise Owl",rarity:"Unique",color:"#008080",chance:"0.025%",image:"https://i.postimg.cc/3xzrxNvX/wiseowl.png"},
+            {name:"Phantom King",rarity:"Mystical",color:"#9C27B0",chance:"0.008%",image:"https://i.postimg.cc/FKPZSthV/Phantom-King.gif"}
+        ]
+    },
+
+
+    space: {
+        name: "Space Pack",
+        cost: 20,
+        image: "https://i.postimg.cc/pTK1FWL5/Space.png",
+        background: "https://i.postimg.cc/tJmY4Y8L/space-background-1.png",
+        blooks: [
+            {name:"Earth",rarity:"Uncommon",color:"limegreen",chance:"18.75%",image:"https://i.postimg.cc/52hkTgKC/earth.png"},
+            {name:"Meteor",rarity:"Uncommon",color:"limegreen",chance:"18.75%",image:"https://i.postimg.cc/Zn5fpMn1/meteor.png"},
+            {name:"Stars",rarity:"Uncommon",color:"limegreen",chance:"18.75%",image:"https://i.postimg.cc/3NftBFDW/stars.png"},
+            {name:"Alien",rarity:"Uncommon",color:"limegreen",chance:"18.75%",image:"https://i.postimg.cc/B6s7Q60Z/alien.png"},
+            {name:"Planet",rarity:"Rare",color:"blue",chance:"10%",image:"https://i.postimg.cc/Kv4qYwdT/planet.png"},
+            {name:"UFO",rarity:"Rare",color:"blue",chance:"10%",image:"https://i.postimg.cc/R0xXXFq1/ufo.png"},
+            {name:"Spaceship",rarity:"Epic",color:"red",chance:"4.5%",image:"https://i.postimg.cc/7L1XckTF/spaceship.png"},
+            {name:"Astronaut",rarity:"Legendary",color:"Orange",chance:"0.45%",image:"https://i.postimg.cc/xj5h8K8w/astronaut.png"},
+            {name:"Red Astronaut",rarity:"Chroma",color:"cyan",chance:"0.05%",image:"https://i.postimg.cc/Y9bRrzR8/redastronaut.png"},
+            {name:"Orange Astronaut",rarity:"Chroma",color:"cyan",chance:"0.05%",image:"https://i.postimg.cc/VNwWXVHD/orangeastronaut.png"},
+            {name:"Yellow Astronaut",rarity:"Chroma",color:"cyan",chance:"0.05%",image:"https://i.postimg.cc/Y9qNsm7F/yellowastronaut.png"},
+            {name:"Lime Astronaut",rarity:"Chroma",color:"cyan",chance:"0.05%",image:"https://i.postimg.cc/7YQRMwgX/limeastronaut.png"},
+            {name:"Green Astronaut",rarity:"Chroma",color:"cyan",chance:"0.05%",image:"https://i.postimg.cc/pLzBhHkm/greenastronaut.png"},
+            {name:"Cyan Astronsut",rarity:"Chroma",color:"cyan",chance:"0.05%",image:"https://i.postimg.cc/BQdgn65W/cyanastronaut.png"},
+            {name:"Blue Astronaut",rarity:"Chroma",color:"cyan",chance:"0.05%",image:"https://i.postimg.cc/BQ8p3DKc/blueastronaut.png"},
+            {name:"Pink Astronaut",rarity:"Chroma",color:"cyan",chance:"0.05%",image:"https://i.postimg.cc/Y2DRT8hC/pinkastronaut.png"},
+            {name:"Purple Astronaut",rarity:"Chroma",color:"cyan",chance:"0.05%",image:"https://i.postimg.cc/QxMPTHWH/purpleastronaut.png"},
+            {name:"Brown Astronaut",rarity:"Chroma",color:"cyan",chance:"0.05%",image:"https://i.postimg.cc/MHHDvfrw/brownastronaut.png"},
+            {name:"Black Astronaut",rarity:"Chroma",color:"cyan",chance:"0.05%",image:"https://i.postimg.cc/FR9GXBy7/blackastronaut.png"},
+            {name:"Black Hole",rarity:"Chroma",color:"cyan",chance:"0.05%",image:"https://i.postimg.cc/GmyXFY3h/Black-Hole.png"},
+            {name:"Lovely Planet",rarity:"Chroma",color:"cyan",chance:"0.05%",image:"https://i.postimg.cc/C59j5PqC/lovelyplanet.png"},
+            {name: "Alien Capsule",rarity:"Unique",color:"#008080",chance: "0.0015%",image:"https://i.postimg.cc/kGk0vLJM/Alien-Capsule.webp"},
+            {name:"Rainbow Astronaut",rarity:"Mystical",color:"#9C27B0",chance:"0.006%",image:"https://i.postimg.cc/JnvqHzwB/Rainbowastronaut.gif"},
+            {name:"Tim The Alien",rarity:"Mystical",color:"#9C27B0",chance:"0.006%",image:"https://i.postimg.cc/vBJrH29r/timthealien.gif"},
+            {name:"Rockening Spaceship",rarity:"Mystical",color:"#9C27B0",chance:"0.006%",image:"https://i.postimg.cc/Hk9XGDm5/Rockening-Spaceship.gif"}
+        ]
+    },
+
+ 
+    bot: {
+        name: "Bot Pack",
+        cost: 20,
+        image: "https://i.postimg.cc/Qxmr52td/Bot.png",
+        background: "https://i.postimg.cc/jqkH556x/bot-background.png",
+        blooks: [
+            {name:"Lil Bot",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/tTq31nmT/lilbot.png"},
+            {name:"Lovely Bot",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/85ZhLkqb/lovelybot.png"},
+            {name:"Angry Bot",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/3wHCTcX2/angrybot.png"},
+            {name:"Happy Bot",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/xdyGT35h/happybot.png"},
+            {name:"Watson",rarity:"Rare",color:"blue",chance:"9%",image:"https://i.postimg.cc/2SW-FgDZz/watson.png"},
+            {name:"Buddy Bot",rarity:"Rare",color:"blue",chance:"9%",image:"https://i.postimg.cc/Fs8VPR1W/buddybot.png"},
+            {name:"Brainy Bot",rarity:"Epic",color:"red",chance:"3.7%",image:"https://i.postimg.cc/Fs7xgcFk/brainybot.png"},
+            {name:"Mega Bot",rarity:"Legendary",color:"Orange",chance:"0.3%",image:"https://i.postimg.cc/c1DmnTWN/megabot.png"},
+            {name:"Ultra Bot",rarity:"Chroma",color:"cyan",chance:"0.06%",image:"https://i.postimg.cc/Fz10p5vX/Ultra-Bot.png"},
+            
+        ]
+    },
+  
+    Aquatic: {
+        name: "Aquatic Pack",
+        cost: 20,
+        image: "https://i.postimg.cc/J40WNTB3/Aquatic.png",
+        background: "https://i.postimg.cc/PrgFCKb5/aquatic-background.png",
+        blooks: [
+            {name:"Old Boot",rarity:"Uncommon",color:"limegreen",chance:"15%",image:"https://i.postimg.cc/zDnkd5T8/oldboot.png"},
+            {name:"Jellyfish",rarity:"Uncommon",color:"limegreen",chance:"15%",image:"https://i.postimg.cc/XqccXcnp/jellyfish.png"},
+            {name:"Clownfish",rarity:"Uncommon",color:"limegreen",chance:"15%",image:"https://i.postimg.cc/tT6zGGfd/clownfish.png"},
+            {name:"Frog",rarity:"Uncommon",color:"limegreen",chance:"15%",image:"https://i.postimg.cc/VNpFhk7L/frog.png"},
+            {name:"Crab",rarity:"Uncommon",color:"limegreen",chance:"15%",image:"https://i.postimg.cc/W4hnSkwH/crab.png"},
+            {name:"Pufferfish",rarity:"Rare",color:"Blue",chance:"6.1%",image:"https://i.postimg.cc/90jYWN56/pufferfish.png"},
+            {name:"Blobfish",rarity:"Rare",color:"Blue",chance:"6.1%",image:"https://i.postimg.cc/t4RDZfZy/blobfish.png"},
+            {name:"Octopus",rarity:"Rare",color:"Blue",chance:"6.1%",image:"https://i.postimg.cc/P56ym4YD/octopus.png"},
+            {name:"Narwhal",rarity:"Epic",color:"Red",chance:"3%",image:"https://i.postimg.cc/xT3tdYdt/narwhal.png"},
+            {name:"Dolphin",rarity:"Epic",color:"Red",chance:"3%",image:"https://i.postimg.cc/X7bs3Xnr/dolphin.png"},
+            {name:"Baby Shark",rarity: "Legendary",color:"Orange",chance:"0.5%",image:"https://i.postimg.cc/vTWXfwt8/babyshark.png"},
+            {name:"Megalodon",rarity: "Legendary",color:"Orange",chance:"0.2%",image:"https://i.postimg.cc/ryWfv526/megalodon.png"},
+            {name:"Spring Frog",rarity: "Chroma",color:"Cyan",chance:"0.08%",image:"https://i.postimg.cc/htMy2gWf/springfrog.png"},
+            {name:"Lucky Frog",rarity: "Chroma",color:"Cyan",chance:"0.08%",image:"https://i.postimg.cc/FKBPQZKv/luckyfrog.png"},
+            {name:"Lovely Frog",rarity: "Chroma",color:"Cyan",chance:"0.08%",image:"https://i.postimg.cc/s2Xn88sK/lovelyfrog.png"},
+            {name:"Rainbow Narwhal",rarity: "Chroma",color:"Cyan",chance:"0.06%",image:"https://i.postimg.cc/XNyP4TFz/rainbownarwhal.png"},
+            {name:"Chrimson Octopus",rarity: "Chroma",color:"Cyan",chance:"0.06%",image:"https://i.postimg.cc/0QzB644r/crimsonoctopus.png"},
+            {name:"Donut Blobfish",rarity: "Chroma",color:"Cyan",chance:"0.06%",image:"https://i.postimg.cc/bJ4F1TXg/donutblobfish.png"},
+            {name:"Rainbow Jellyfish",rarity: "Chroma",color:"Cyan",chance:"0.04%",image:"https://i.postimg.cc/4yCBYxtF/rainbowjellyfish.png"},
+            {name:"Poison Dart Frog",rarity: "Chroma",color:"Cyan",chance:"0.04%",image:"https://i.postimg.cc/htKZ8vYk/poisondartfrog.png"},
+            {name:"Blizzard Clownfish",rarity: "Chroma",color:"Cyan",chance:"0.04%",image:"https://i.postimg.cc/ZRvwYd9d/blizzardclownfish.png"},
+            {name:"Beach",rarity: "Unique",color:"#008080",chance:"0.025%",image:"https://i.postimg.cc/FFW643TD/Beach.png"}
+        ]
+    },
+
+    safari: {
+        name: "Safari Pack",
+        cost: 20,
+        image: "https://i.postimg.cc/SRgRZDq0/Safari.png",
+        background: "https://i.postimg.cc/C1GdTwCV/safari-background.png", 
+        blooks: [
+            {name:"Panda",rarity: "Uncommon",color:"limegreen",chance:"15%",image:"https://i.postimg.cc/WzpNBgbM/panda.png"},
+            {name:"Sloth",rarity: "Uncommon",color:"limegreen",chance:"15%",image:"https://i.postimg.cc/X7zjPZMC/sloth.png"},
+            {name:"Tenrec",rarity: "Uncommon",color:"limegreen",chance:"15%",image:"https://i.postimg.cc/yYd6nmGK/tenrec.png"},
+            {name:"Flamingo",rarity: "Uncommon",color:"limegreen",chance:"15%",image:"https://i.postimg.cc/XNx7wHQx/flamingo.png"},
+            {name:"Zebra",rarity: "Uncommon",color:"limegreen",chance:"15%",image:"https://i.postimg.cc/D0Cvn08R/zebra.png"},
+            {name:"Elephant",rarity: "Rare",color:"Blue",chance:"7%",image:"https://i.postimg.cc/3RFrfn78/elephant.png"},
+            {name:"Lemur",rarity: "Rare",color:"Blue",chance:"7%",image:"https://i.postimg.cc/QdvMFF03/lemur.png"},
+            {name:"Peacock",rarity: "Rare",color:"Blue",chance:"7%",image:"https://i.postimg.cc/3RTJZzsf/peacock.png"},
+            {name:"Chameleon",rarity: "Epic",color:"Red",chance:"3.48%",image:"https://i.postimg.cc/7L7Z0qWT/chameleon.png"},
+            {name:"Lion",rarity: "Legendary",color:"Orange",chance:"0.5%",image:"https://i.postimg.cc/tRz7BCC3/lion.png"},
+            {name:"Rainbow Panda",rarity: "Chroma",color:"Cyan",chance:"0.02%",image:"https://i.postimg.cc/RZWFC71d/rainbowpanda.png"},
+            {name:"White Peacock",rarity: "Chroma",color:"Cyan",chance:"0.02%",image:"https://i.postimg.cc/SNTRpT9j/whitepeacock.png"},
+            {name:"Tiger Zebra",rarity: "Chroma",color:"Cyan",chance:"0.02%",image:"https://i.postimg.cc/4NNyqkmr/tigerzebra.png"}
+        ]
+    },
+
+
+    dino: {
+        name: "Dino Pack",
+        cost: 25,
+        image: "https://i.postimg.cc/vHQhKB7b/Dino.png",
+        background: "https://i.postimg.cc/g0v6dyd5/dino-background.png",
+        blooks: [
+            {name:"Amber",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/fbLTqxym/Amber.webp"},
+            {name:"Dino Egg",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/x1g1Psf9/Dino-Egg.webp"},
+            {name:"Dino Fossil",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/W1s4gRP9/Dino-Fossil.webp"},
+            {name:"Dino Footprint",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/qBwM63ff/Dino-Footprint.png"},
+            {name:"Stegosaurus",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/kXQ42JL6/Stegosaurus.webp"},
+            {name:"Velociraptor",rarity:"Rare",color:"Blue",chance:"9%",image:"https://i.postimg.cc/65Jq62bx/Velociraptor.webp"},
+            {name:"Brontosaurus",rarity:"Rare",color:"Blue",chance:"9%",image:"https://i.postimg.cc/85x56j1W/Brontosaurus.webp"},
+            {name:"Triceratops",rarity:"Epic",color:"Red",chance:"3.7%",image:"https://i.postimg.cc/Hn5L4dxN/Triceratops.webp"},
+            {name:"Tryannosaurus Rex",rarity:"Legendary",color:"Orange",chance:"0.3%",image:"https://i.postimg.cc/ZRWnnrh4/Tyrannosaurus-Rex.webp"},
+            {name:"Golden Amber",rarity:"Chroma",color:"Cyan",chance:"0.07%",image:"https://i.postimg.cc/T2WhXq9c/Golden-Amber.webp"}
+
+        ] 
+    },
+
+  
+      icemonsters: {
+        name: "Ice Monsters Pack",
+        cost: 25,
+        image: "https://i.postimg.cc/XNDKs8vc/Ice-Monsters.png",
+        background: "https://i.postimg.cc/90G7XGGz/ice-monsters-background-1.png",
+        blooks: [
+            {name:"Ice Bat",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/63KwJn5M/icebat.png"},
+            {name:"Ice Bug",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/d0rvx4v7/icebug.png"},
+            {name:"Ice Elemental",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/jSGtcGV0/iceelemental.png"},
+            {name:"Rock Monster",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/SxXmWmvf/rockmonster.png"},
+            {name:"Dink",rarity:"Rare",color:"Blue",chance:"8.5%",image:"https://i.postimg.cc/LXVSH5J2/dink.png"},
+            {name:"Donk",rarity:"Rare",color:"Blue",chance:"8.5%",image:"https://i.postimg.cc/BQ7qLjMv/donk.png"},
+            {name:"Bush Monster",rarity:"Epic",color:"Red",chance:"4.5%",image:"https://i.postimg.cc/fyBMvysB/bushmonster.png"},
+            {name:"Yeti",rarity:"Legendary",color:"Orange",chance:"0.35%",image:"https://i.postimg.cc/gk2z2Vy5/yeti.png"},
+            {name:"Ice Slime",rarity:"Chroma",color:"Cyan",chance:"0.08%",image:"https://i.postimg.cc/nrHH77yX/iceslime.png"},
+            {name:"Ice Fossil",rarity:"Chroma",color:"Cyan",chance:"0.05%",image:"https://i.postimg.cc/sfcfz6W7/frozenfossil.png"},
+            {name:"Ice Crab",rarity:"Chroma",color:"Cyan",chance:"0.02%",image:"https://i.postimg.cc/RF1SNGDr/icecrab.png"},
+        
+        ]
+    },
+
+      
+    outback: {
+        name: "Outback Pack",
+        cost: 25,
+        image: "https://i.postimg.cc/vZqcyQ4J/Outback.png",
+        background: "https://i.postimg.cc/N0KLfWT5/outback-background.png",
+        blooks: [
+            {name:"Dingo",rarity:"Uncommon",color:"limegreen",chance:"18.75%",image:"https://i.postimg.cc/hjJCsPmc/dingo.png"},
+            {name:"Echidna",rarity:"Uncommon",color:"limegreen",chance:"18.75%",image:"https://i.postimg.cc/cJk9f8rF/echidna.png"},
+            {name:"Koala",rarity:"Uncommon",color:"limegreen",chance:"18.75%",image:"https://i.postimg.cc/2yh0pcTt/koala.png"},
+            {name:"Kookaburra",rarity:"Uncommon",color:"limegreen",chance:"18.75%",image:"https://i.postimg.cc/d1z5xPRd/kookaburra.png"},
+            {name:"Platypus",rarity:"Rare",color:"blue",chance:"7%",image:"https://i.postimg.cc/y6ZQSxBT/platypus.png"},
+            {name:"Joey",rarity:"Rare",color:"blue",chance:"7%",image:"https://i.postimg.cc/c4GD7WLG/joey.png"},
+            {name:"Kangaroo",rarity:"Rare",color:"blue",chance:"7%",image:"https://i.postimg.cc/sDPTwLMQ/kangaroo.png"},
+            {name:"Crocodile",rarity:"Epic",color:"red",chance:"3.6%",image:"https://i.postimg.cc/x10t7Pms/crocodile.png"},
+            {name:"Sugar Glider",rarity:"Legendary",color:"orange",chance:"0.37%",image:"https://i.postimg.cc/pLqqtnYP/sugarglider.png"},
+            {name:"Teal Platypus",rarity:"Chroma",color:"cyan",chance:"0.03%",image:"https://i.postimg.cc/ZqnjYKVp/tealplatypus.png"},
+            {name:"Galaxy Platypus",rarity:"Mystical",color:"#9C27B0",chance:"0.006%",image:"https://i.postimg.cc/bv4rG3HL/Galaxy-Platypus.gif"},
+
+            
+        ]
+    },
+
+        
+    pirate: {
+        name: "Pirate Pack",
+        cost: 25,
+        image: "https://i.postimg.cc/cJMqrWqh/Pirate.png",
+        background: "https://i.postimg.cc/QNBqNbZY/piratebackground.png",
+        blooks: [
+            {name:"Deckhand",rarity:"Uncommon",color:"limegreen",chance:"16%",image:"https://i.postimg.cc/SsRJrDfB/deckhand.webp"},
+            {name:"Buccaneer",rarity:"Uncommon",color:"limegreen",chance:"16%",image:"https://i.postimg.cc/hhWvKgRn/buccaneer.webp"},
+            {name:"Swashblucker",rarity:"Uncommon",color:"limegreen",chance:"16%",image:"https://i.postimg.cc/9XvYD7Wm/sw-ashbuckler.webp"},
+            {name:"Treasure Map",rarity:"Uncommon",color:"limegreen",chance:"16%",image:"https://i.postimg.cc/g2pyDbX1/treasuremap.webp"},
+            {name:"Seagull",rarity:"Uncommon",color:"limegreen",chance:"16%",image:"https://i.postimg.cc/ZKpFp5Rr/seagull.webp"},
+            {name:"Jolly Pirate",rarity:"Rare",color:"blue",chance:"8%",image:"https://i.postimg.cc/pdGDR9Gt/jollypirate.webp"},
+            {name:"Pirate Ship",rarity:"Rare",color:"blue",chance:"8%",image:"https://i.postimg.cc/DZ45Nd2N/pirateship.png"},
+            {name:"Kraken",rarity:"Epic",color:"Red",chance:"3.67%",image:"https://i.postimg.cc/x1PvppL8/kraken.webp"},
+            {name:"Captain Blackbeard",rarity:"Legendary",color:"orange",chance:"0.3%",image:"https://i.postimg.cc/BvQxr5Cg/captainblackbeard.webp"},
+            {name:"Pirate Pufferfish",rarity:"Chroma",color:"cyan",chance:"0.06%",image:"https://i.postimg.cc/Hn7jGnK3/piratepufferfish.png"},
+            {name:"Treasure Chest",rarity:"Chroma",color:"cyan",chance:"0.03%",image:"https://i.postimg.cc/d1fDSrWL/Treasure-Chest.png"},
+
+        ]
+    },
+
+    
+    bug: {
+        name: "Bug Pack",
+        cost: 25,
+        image: "https://i.postimg.cc/9MN5dBLN/Bug.png",
+        background: "https://i.postimg.cc/26ChQQ1v/bug-background.png",
+        blooks: [
+            {name:"Ant",rarity:"Uncommon",color:"limegreen",chance:"19.25%",image:"https://i.postimg.cc/htw215nm/ant.webp"},
+            {name:"Rhino Beetle",rarity:"Uncommon",color:"limegreen",chance:"19.25%",image:"https://i.postimg.cc/CKqmPsMQ/rhinobeetle.webp"},
+            {name:"Ladybug",rarity:"Uncommon",color:"limegreen",chance:"19.25%",image:"https://i.postimg.cc/bJfLKSsN/ladybug.webp"},
+            {name:"Fly",rarity:"Uncommon",color:"limegreen",chance:"19.25%",image:"https://i.postimg.cc/zvJ7fmCs/fly.webp"},
+            {name:"Worm",rarity:"Rare",color:"blue",chance:"9%",image:"https://i.postimg.cc/hvprzCMf/worm.webp"},
+            {name:"Bee",rarity:"Rare",color:"blue",chance:"9%",image:"https://i.postimg.cc/PxbKhfwb/bee.webp"},
+            {name:"Mantis",rarity:"Epic",color:"red",chance:"2.97%",image:"https://i.postimg.cc/ncS2nPCW/mantis.webp"},
+            {name:"Butterfly",rarity:"Legendary",color:"orange",chance:"0.5%",image:"https://i.postimg.cc/ZK5jtSK3/butterfly.webp"},
+            {name:"Lucky Bee",rarity:"Chroma",color:"cyan",chance:"0.06%",image:"https://i.postimg.cc/g2wDjHh2/luckybee.webp"},
+            {name:"Blue Butterfly",rarity:"Chroma",color:"cyan",chance:"0.03%",image:"https://i.postimg.cc/Dfg5MZFn/bluebutterfly.webp"},
+            {name:"Fire Ant",rarity:"Chroma",color:"cyan",chance:"0.03%",image:"https://i.postimg.cc/tgWNtR20/Fire-Ant.png"},
+
+
+        ]
+    },
+
+     
+    lunch: {
+        name: "Lunch Pack",
+        cost: 25,
+        image: "https://i.postimg.cc/HnZK9Tdg/Lunch-Pack.png",
+        background: "https://i.postimg.cc/gkb41wtT/lunch-background.png",
+        blooks: [
+            {name:"Bananas",rarity:"Uncommon",color:"limegreen",chance:"18.75%",image:"https://i.postimg.cc/FskGByxc/bananas.webp"},
+            {name:"Watermelon",rarity:"Uncommon",color:"limegreen",chance:"18.75%",image:"https://i.postimg.cc/9fCp0vHt/watermelon.webp"},
+            {name:"Cheese",rarity:"Uncommon",color:"limegreen",chance:"18.75%",image:"https://i.postimg.cc/fR45nVHP/cheese.webp"},
+            {name:"Donut",rarity:"Uncommon",color:"limegreen",chance:"18.75%",image:"https://i.postimg.cc/jjch7ZsV/doughnut.webp"},
+            {name:"Tacos",rarity:"Rare",color:"blue",chance:"7%",image:"https://i.postimg.cc/3RbCLN4n/taco.webp"},
+            {name:"Bao",rarity:"Rare",color:"blue",chance:"7%",image:"https://i.postimg.cc/P5mytd95/bao.webp"},
+            {name:"Sushi",rarity:"Rare",color:"blue",chance:"7%",image:"https://i.postimg.cc/FRKVg3RY/sushi.webp"},
+            {name:"Cheeseburger",rarity:"Epic",color:"red",chance:"3.31%",image:"https://i.postimg.cc/PJgbj7MD/cheeseburger.webp"},
+            {name:"Sandwich",rarity:"Legendary",color:"orange",chance:"0.5%",image:"https://i.postimg.cc/V6K37kjS/sandwich.webp"},
+            {name:"Half-Sandwich",rarity:"chroma",color:"cyan",chance:"0.05%",image:"https://i.postimg.cc/zvbw4NT5/halfasandwich.webp"},
+        ]
+    },
+
+    
+    toy: {
+        name: "Toy Pack",
+        cost: 25,
+        image: "https://i.postimg.cc/MZMy6WjJ/Toys.png",
+        background: "https://i.postimg.cc/65CCkt86/toy-background.png",
+        blooks: [
+            {name:"Teddy Bear",rarity:"Uncommon",color:"limegreen",chance:"15%",image:"https://i.postimg.cc/yNdQ1MHg/Teddy-Bear.png"},
+            {name:"Toy Car",rarity:"Uncommon",color:"limegreen",chance:"15%",image:"https://i.postimg.cc/3rgBT8vf/Toy-Car-1.png"},
+            {name:"Red Brick",rarity:"Uncommon",color:"limegreen",chance:"15%",image:"https://i.postimg.cc/1zGGZMgn/Red-Brick.png"},
+            {name:"Yoyo",rarity:"Uncommon",color:"limegreen",chance:"15%",image:"https://i.postimg.cc/wTMgRW5L/Yoyo.png"},
+            {name:"Brick Man",rarity:"Rare",color:"blue",chance:"7%",image:"https://i.postimg.cc/x1F7zfgy/Brick-Man.png"},
+            {name:"Toy Blocks",rarity:"Rare",color:"blue",chance:"7%",image:"https://i.postimg.cc/prGyH5Yn/Toy-Blocks.png"},
+            {name:"Bouncy Ball",rarity:"Epic",color:"red",chance:"3.5%",image:"https://i.postimg.cc/3wtXt1dg/bouncy-ball.png"},
+            {name:"Yellow Brick",rarity:"Legendary",color:"orange",chance:"1.25%",image:"https://i.postimg.cc/PxdmfZZ6/Yellow-Brick.png"},
+            {name:"Fidget Spinner",rarity:"Chroma",color:"cyan",chance:"0.08%",image:"https://i.postimg.cc/W3KMv4mz/Fidget-Spinner.png"},
+            {name:"Tamagochi",rarity:"Mystical",color:"#9C27B0",chance:"0.009%",image:"https://i.postimg.cc/1R6W30LH/Tamagochi.gif"},
+            
+        ]
+    },
+
+    
+    art: {
+        name: "Art Pack",
+        cost: 25,
+        image: "https://i.postimg.cc/XvqLStM2/Art.png",
+        background: "https://i.postimg.cc/GpfQczdb/Canvas-background.png",
+        blooks: [
+            {name:"Canvas",rarity:"Uncommon",color:"limegreen",chance:"18.75%",image:"https://i.postimg.cc/8zjf1G5r/Canvas.png"},
+            {name:"Paint Bucket",rarity:"Uncommon",color:"limegreen",chance:"18.75%",image:"https://i.postimg.cc/CxXB52Br/Paint-Bucket.png"},
+            {name:"Banana Tape",rarity:"Uncommon",color:"limegreen",chance:"18.75%",image:"https://i.postimg.cc/ZKfytnTS/Banana-Tape.png"},
+            {name:"Dryboard",rarity:"Uncommon",color:"limegreen",chance:"18.75%",image:"https://i.postimg.cc/nr29LcBq/Dryboard-1.png"},
+            {name:"Chalkboard",rarity:"Rare",color:"blue",chance:"9.5%",image:"https://i.postimg.cc/FFVLpG81/Chalkboard.png"},
+            {name:"Sketchpad",rarity:"Rare",color:"blue",chance:"9.5%",image:"https://i.postimg.cc/9FXqnZHb/Sketchpad.png"},
+            {name:"Paint Brush",rarity:"Epic",color:"red",chance:"3%",image:"https://i.postimg.cc/k4rb1H7R/Paint-Brush.png"},
+            {name:"Blooky",rarity:"Epic",color:"red",chance:"3%",image:"https://i.postimg.cc/fbSdvsQh/Blooky.png"},
+            {name:"Artist",rarity:"Legendary",color:"orange",chance:"0.5%",image:"https://i.postimg.cc/d3wTvTkq/Artist.png"},
+            {name:"Angry Blooky",rarity:"Chroma",color:"cyan",chance:"0.02%",image:"https://i.postimg.cc/ydFSw-TNQ/Angry-Blooky.png"},
+            
+        ]
+    },
+
+    
+    blizzard: {
+        name: "Blizzard Pack",
+        cost: 25,
+        image: "https://i.postimg.cc/gj7vbJK0/Blizzard.png",
+        background: "https://i.postimg.cc/J4zcFwMg/blizzard-background.png",
+        blooks: [
+            {name:"Snowglobe",rarity:"Uncommon",color:"limegreen",chance:"14.5%",image:"https://i.postimg.cc/7YtM8BLL/snowglobe.png"},
+            {name:"Present",rarity:"Uncommon",color:"limegreen",chance:"14.5%",image:"https://i.postimg.cc/Mpc0Wycm/holidaygift.png"},
+            {name:"Hot Chocolate",rarity:"Uncommon",color:"limegreen",chance:"14.5%",image:"https://i.postimg.cc/1zwpFsrg/hotchocolate.png"},
+            {name:"Holiday Wreath",rarity:"Uncommon",color:"limegreen",chance:"14.5%",image:"https://i.postimg.cc/mg0YhtCf/holidaywreath.png"},
+            {name:"Stocking",rarity:"Uncommon",color:"limegreen",chance:"14.5%",image:"https://i.postimg.cc/wvzDcZww/stocking.png"},
+            {name:"Gingerbread Man",rarity:"Rare",color:"blue",chance:"7.1%",image:"https://i.postimg.cc/Kz5B9fVx/gingerbreadman.png"},
+            {name:"Gingerbread House",rarity:"Rare",color:"blue",chance:"7.1%",image:"https://i.postimg.cc/hvPxNxWx/gingerbreadhouse.png"},
+            {name:"Reindeer",rarity:"Rare",color:"blue",chance:"7.1%",image:"https://i.postimg.cc/qqbnrR4F/reindeer.png"},
+            {name:"Snowman",rarity:"Epic",color:"red",chance:"5.15%",image:"https://i.postimg.cc/nV0qBdB1/snowman.png"},
+            {name:"Santa Claus",rarity:"Legendary",color:"orange",chance:"1%",image:"https://i.postimg.cc/SNRCrWGb/santaclaus.png"},
+            {name:"London Snowglobe",rarity:"Chroma",color:"Cyan",chance:"0.05%",image:"https://i.postimg.cc/3wXvR93m/londonsnowglobe.png"},
+            {name:"Japan Snowglobe",rarity:"Chroma",color:"Cyan",chance:"0.05%",image:"https://i.postimg.cc/pTk5QThd/japansnowglobe.png"},
+            {name:"Egypt Snowglobe",rarity:"Chroma",color:"Cyan",chance:"0.05%",image:"https://i.postimg.cc/yxdgLHcy/egyptsnowglobe.png"},
+            {name:"Paris Snowglobe",rarity:"Chroma",color:"Cyan",chance:"0.05%",image:"https://i.postimg.cc/4ySKMS1k/parissnowglobe.png"},
+            {name:"New York Snowglobe",rarity:"Chroma",color:"Cyan",chance:"0.05%",image:"https://i.postimg.cc/hjK77xGw/newyorksnowglobe.png"},
+            {name:"Frost Wreath",rarity:"Chroma",color:"Cyan",chance:"0.04%",image:"https://i.postimg.cc/wTrJb7Wy/frostwreath.png"},
+            {name:"Tropical Globe",rarity:"Chroma",color:"Cyan",chance:"0.04%",image:"https://i.postimg.cc/5tdzbDWf/tropicalglobe.png"},
+            {name:"Cookie Combo",rarity:"Chroma",color:"Cyan",chance:"0.04%",image:"https://i.postimg.cc/3wFk7RZZ/cookiescombo.png"},
+            {name:"Chilly Flamingo",rarity:"Chroma",color:"Cyan",chance:"0.04%",image:"https://i.postimg.cc/yxVXBt9D/chillyflamingo.png"},
+            {name:"Snowy Bush Monster",rarity:"Chroma",color:"Cyan",chance:"0.04%",image:"https://i.postimg.cc/HnB0Lz4B/snowybushmonster.png"},
+            {name:"Nutcracker Koala",rarity:"Chroma",color:"Cyan",chance:"0.04%",image:"https://i.postimg.cc/fWKf5Wnm/nutcrackerkoala.png"},
+            {name:"Holiday Elf",rarity:"Chroma",color:"Cyan",chance:"0.04%",image:"https://i.postimg.cc/qvntbQhS/holidayelf.png"},
+            {name:"Santa Claws",rarity:"Chroma",color:"Cyan",chance:"0.04%",image:"https://i.postimg.cc/1tRfzQC1/santaclaws.png"},
+            {name:"Cozy Baby Penguin",rarity:"Chroma",color:"Cyan",chance:"0.04%",image:"https://i.postimg.cc/QM3FR5ct/cozybabypenguin.png"},
+            {name:"Blue Sweater Snowman",rarity:"Chroma",color:"Cyan",chance:"0.04%",image:"https://i.postimg.cc/7Y5J7qxx/bluesw-eatersnowman.png"},
+            {name:"Red Sweater Snowman",rarity:"Chroma",color:"Cyan",chance:"0.04%",image:"https://i.postimg.cc/J76BGsC6/redsw-eatersnowman.png"},
+            {name:"Elf Sweater Snowman",rarity:"Chroma",color:"Cyan",chance:"0.04%",image:"https://i.postimg.cc/pX3hJ3TK/elfsw-eatersnowman.png"},
+            {name:"Hamsta Claus",rarity:"Mystical",color:"#9C27B0",chance:"0.008%",image:"https://ac.blooket.com/marketassets/blooks/hamstaclaus.svg"},
+        
+            
+        ]
+    },
+
+    
+    spooky: {
+        name: "Spooky Pack",
+        cost: 25,
+        image: "https://i.postimg.cc/ZKXB7dw9/Spooky.png",
+        background: "https://i.postimg.cc/Mpgd05Mv/spooky-background.png",
+        blooks: [
+            {name:"Pumpkin",rarity:"Uncommon",color:"limegreen",chance:"19%",image:"https://i.postimg.cc/T3khBNq3/pumpkin.webp"},
+            {name:"Swamp Monster",rarity:"Uncommon",color:"limegreen",chance:"19%",image:"https://i.postimg.cc/bvsdP03H/sw-ampmonster.webp"},
+            {name:"Freankenstein",rarity:"Uncommon",color:"limegreen",chance:"19%",image:"https://i.postimg.cc/BnZXYfFz/frankenstein.webp"},
+            {name:"Vampire",rarity:"Uncommon",color:"limegreen",chance:"19%",image:"https://i.postimg.cc/hPBJmdtc/vampire.webp"},
+            {name:"Zombie",rarity:"Rare",color:"blue",chance:"4%",image:"https://i.postimg.cc/bN9Z9wZb/zombie.webp"},
+            {name:"Mummy",rarity:"Rare",color:"blue",chance:"4%",image:"https://i.postimg.cc/3rp4WB7t/mummy.webp"},
+            {name:"Caramel Apple",rarity:"Rare",color:"blue",chance:"4%",image:"https://i.postimg.cc/qqfNjtcc/caramelapple2.webp"},
+            {name:"Candy Corn",rarity:"Rare",color:"blue",chance:"4%",image:"https://i.postimg.cc/QtKBQg7x/candycorn.webp"},
+            {name:"Crow",rarity:"Rare",color:"blue",chance:"4%",image:"https://i.postimg.cc/qqMvm8h3/crow.webp"},
+            {name:"Bat",rarity:"Epic",color:"red",chance:"3%",image:"https://i.postimg.cc/brLmQjkh/Bat.png"},
+            {name:"Werewolf",rarity:"Epic",color:"red",chance:"3.29%",image:"https://i.postimg.cc/cCQrjsTp/werewolf.webp"},
+            {name:"Ghost",rarity:"Legendary",color:"orange",chance:"0.65%",image:"https://i.postimg.cc/JzKBMzmm/ghost.webp"},
+            {name:"Green Gummy Bear",rarity:"Chroma",color:"cyan",chance:"0.08%",image:"https://i.postimg.cc/nc4DS1PX/greengummybear.webp"},
+            {name:"Blue Gummy Bear",rarity:"Chroma",color:"cyan",chance:"0.08%",image:"https://i.postimg.cc/3J5GZqnM/bluegummybear.webp"},
+            {name:"Red Gummy Bear",rarity:"Chroma",color:"cyan",chance:"0.08%",image:"https://i.postimg.cc/rytWxTGC/redgummybear.webp"},
+            {name:"Haunted Pumpkin",rarity:"Chroma",color:"cyan",chance:"0.06%",image:"https://i.postimg.cc/yNd3dCYR/hauntedpumpkin.webp"},
+            {name:"Pumpkin Cookie",rarity:"Chroma",color:"cyan",chance:"0.06%",image:"https://i.postimg.cc/BvVLP7XV/pumpkincookie.webp"},
+            {name:"Ghost Cookie",rarity:"Chroma",color:"cyan",chance:"0.06%",image:"https://i.postimg.cc/zGqRsRs0/ghostcookie.webp"},
+            {name:"Vampire Frog",rarity:"Chroma",color:"cyan",chance:"0.04%",image:"https://i.postimg.cc/1z5wqNMf/vampirefrog.webp"},
+            {name:"Pumpkin King",rarity:"Chroma",color:"cyan",chance:"0.04%",image:"https://i.postimg.cc/3wVNxyqM/pumpkinking.webp"},
+            {name:"Spooky Pumpkin",rarity:"Chroma",color:"cyan",chance:"0.02%",image:"https://i.postimg.cc/jShy2hHp/spookypumpkin.webp"},
+            {name:"Spooky Mummy",rarity:"Chroma",color:"cyan",chance:"0.02%",image:"https://i.postimg.cc/bwPQq5t0/spookymummy.webp"},
+            {name:"Spooky Ghost",rarity:"Mystical",color:"#9C27B0",chance:"0.008%",image:"https://ac.blooket.com/marketassets/blooks/spookyghost.svg"},
+            
+            
+        ]
+    },
+
+    autumn: { 
+        name: "Autumn Pack",
+        cost: 25,
+        image: "https://i.postimg.cc/pdhGF7s9/Autumn.png",
+        background: "https://i.postimg.cc/brT3Pjw5/autumn-background.webp",
+        blooks: [
+            {name:"Black Bear",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/3wYN4581/blackbear.webp"},
+            {name:"Pumpkin Pie",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/TwH34KrN/pumpkinpie.webp"},
+            {name:"Chipmunk",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/TwPP0VWW/chipmunk.webp"},
+            {name:"Cornucopia",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/vmhB5qDs/cornucopia.webp"},
+            {name:"Squash",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/25kjjQGX/pumpkin.webp"},
+            {name:"Pilgrim Hat",rarity:"Rare",color:"blue",chance:"9%",image:"https://i.postimg.cc/Qdkxr4QT/Pilgrim-Hat-1.webp"},
+            {name:"Autumn Cat",rarity:"Rare",color:"blue",chance:"9%",image:"https://i.postimg.cc/HnckDTzY/autumncat.webp"},
+            {name:"Pumpkin Puppy",rarity:"Rare",color:"blue",chance:"9%",image:"https://i.postimg.cc/Y05qtTD1/pumpkinpuppy.webp"},
+            {name:"Autumn Crow",rarity:"Epic",color:"red",chance:"3.95%",image:"https://i.postimg.cc/X75Ys7Xx/autumncrow.webp"},
+            {name:"Turkey",rarity:"Legendary",color:"orange",chance:"1.5%",image:"https://i.postimg.cc/NGS08rG5/turkey.webp"},
+            {name:"Golden Pumpkin Pie",rarity:"Chroma",color:"cyan",chance:"0.08%",image:"https://i.postimg.cc/qvdMSV3r/goldenpumpkinpie.webp"},
+        ]
+     },
+
+
+     emoji: { 
+        name: "Emoji Pack",
+        cost: 30,
+        image: "https://i.postimg.cc/XvjFMyCn/Emoji.png",
+        background: "https://i.postimg.cc/4ysmDYyz/emoji-Background.png",
+        blooks: [
+            {name:"Happy Emoji",rarity:"Uncommon",color:"limegreen",chance:"12.5%",image:"https://i.postimg.cc/JnB2fhv4/Happy-Emoji.png"},
+            {name:"Angel Emoji",rarity:"Uncommon",color:"limegreen",chance:"12.5%",image:"https://i.postimg.cc/Rh7b0Dvk/Angel-Emoji.png"},
+            {name:"Gentlemen Emoji",rarity:"Uncommon",color:"limegreen",chance:"12.5%",image:"https://i.postimg.cc/3wqqfGLc/Gentleman-Emoji.png"},
+            {name:"Lovely Emoji",rarity:"Uncommon",color:"limegreen",chance:"12.5%",image:"https://i.postimg.cc/nrbPpJfK/Lovely-Emoji.png"},
+            {name:"Nerd Emoji",rarity:"Rare",color:"Blue",chance:"8.2%",image:"https://i.postimg.cc/dV4pdpGv/Nerd-Emoji.png"},
+            {name:"Cool Emoji",rarity:"Rare",color:"Blue",chance:"8.2%",image:"https://i.postimg.cc/YS0VxRxF/Cool-Emoji.png"},
+            {name:"Celebrate Emoji",rarity:"Rare",color:"Blue",chance:"8.2%",image:"https://i.postimg.cc/cLsPv0gX/Celebrate-Emoji.png"},
+            {name:"Rich Emoji",rarity:"Epic",color:"red",chance:"6%",image:"https://i.postimg.cc/76pphz02/Rich-Emoji.png"},
+            {name:"Worried Emoji",rarity:"Epic",color:"red",chance:"6%",image:"https://i.postimg.cc/Nf8WG5MK/Worried-Emoji.png"},
+            {name:"Cold Emoji",rarity:"Legendary",color:"orange",chance:"1.5%",image:"https://i.postimg.cc/BQfrGxqW/Cold-Eomji.png"},
+            {name:"Angry Emoji",rarity:"Legendary",color:"orange",chance:"0.35%",image:"https://i.postimg.cc/h4dkwCRb/Angry-Emoji.png"},
+            {name:"Manley Emoji",rarity:"Chroma",color:"cyan",chance:"0.05%",image:"https://i.postimg.cc/d3rgy0jS/Manley-Emoji.png"},
+            
+        ]
+     },
+
+
+    fastfood: { 
+        name: "Fast Food Pack",
+        cost: 30,
+        image: "https://i.postimg.cc/qMg34CQL/Fast-Food.png",
+        background: "https://i.postimg.cc/vH1cpwH2/Fast-food-background.png",
+        blooks: [
+            {name:"Burger",rarity:"Uncommon",color:"limegreen",chance:"12.5%",image:"https://i.postimg.cc/DwJpJ0fQ/Burger.png"},
+            {name:"French Fries",rarity:"Uncommon",color:"limegreen",chance:"12.5%",image:"https://i.postimg.cc/52h7wJjh/French-Fries.png"},
+            {name:"Soda",rarity:"Uncommon",color:"limegreen",chance:"12.5%",image:"https://i.postimg.cc/dtSSVrFt/Soda.png"},
+            {name:"Glaze Donut",rarity:"Uncommon",color:"limegreen",chance:"12.5%",image:"https://i.postimg.cc/c1hbPP53/Glaze-Donut.png"},
+            {name:"Soda Dispenser",rarity:"Rare",color:"Blue",chance:"6%",image:"https://i.postimg.cc/sD2NzKtN/Soda-Dispenser.png"},
+            {name:"Fast Food Combo",rarity:"Rare",color:"Blue",chance:"6%",image:"https://i.postimg.cc/mkmpMFFj/Fast-Food-Combo.png"},
+            {name:"Milkshake",rarity:"Rare",color:"Blue",chance:"6%",image:"https://i.postimg.cc/LXBb9W9r/Milkshake.png"},
+            {name:"Hotdog",rarity:"Epic",color:"red",chance:"3.25%",image:"https://i.postimg.cc/nhg507Sw-/Hotdog.png"},
+            {name:"Glowing Burger",rarity:"Legendary",color:"orange",chance:"0.25%",image:"https://i.postimg.cc/7hHQfNbb/Glowing-Burger.png"},
+            {name:"Chocolate Donut",rarity:"Chroma",color:"cyan",chance:"0.04%",image:"https://i.postimg.cc/k4dHdCmQ/Chocolate-Glaze-Donut.png"},
+            {name:"Chocolate Milkshake",rarity:"chroma",color:"cyan",chance:"0.02%",image:"https://i.postimg.cc/fbdPFL6W/Chocolate-Milkshake.png"},
+            
+        ]
+     },
+
+
+     crossy: { 
+        name: "Crossy Pack",
+        cost: 30,
+        image: "https://i.postimg.cc/c4HT8C19/Crossy.png",
+        background: "https://i.postimg.cc/d3XCCqnp/Crossy-Background.png",
+        blooks: [
+            {name:"Crossy Chicken",rarity:"Uncommon",color:"limegreen",chance:"19.625%",image:"https://i.postimg.cc/q756SBHR/Crossy-Chicken.png"},
+            {name:"Mallard",rarity:"Uncommon",color:"limegreen",chance:"19.625%",image:"https://i.postimg.cc/P5Kwbz61/Mallard.png"},
+            {name:"Pigeon",rarity:"Uncommon",color:"limegreen",chance:"19.625%",image:"https://i.postimg.cc/zBHHrmqk/Pigeon.png"},
+            {name:"Rusty Robot",rarity:"Uncommon",color:"limegreen",chance:"19.625%",image:"https://i.postimg.cc/CK1fcBtX/Rusty-Robot.png"},
+            {name:"Kiwi",rarity:"Rare",color:"blue",chance:"9%",image:"https://i.postimg.cc/YCtFmyxp/Kiwi.png"},
+            {name:"Crossy Vampire",rarity:"Rare",color:"blue",chance:"9%",image:"https://i.postimg.cc/8krL8v5V/Crossy-Vampire.png"},
+            {name:"Dicey",rarity:"Epic",color:"Red",chance:"2.97%",image:"https://i.postimg.cc/15hwyznV/Dicey.png"},
+            {name:"Seoul Chicken",rarity:"Legendary",color:"orange",chance:"0.5%",image:"https://i.postimg.cc/RV7fhzKs/Seoul-Chicken.png"},
+            {name:"Mafia Mallard",rarity:"Chroma",color:"cyan",chance:"0.06%",image:"https://i.postimg.cc/4ytcpDM3/Mafia-Mallard.png"},
+            
+            
+        ]
+     },
+
+
+     hackers: { 
+        name: "Hackers Pack",
+        cost: 30,
+        image: "https://i.postimg.cc/C5jZRjBB/Hackers.png",
+        background: "https://i.postimg.cc/T2qYW2ND/Hackers-Background.png",
+        blooks: [
+            {name:"Hacker",rarity:"Uncommon",color:"limegreen",chance:"12.75%",image:"https://i.postimg.cc/SNqLqv9L/Hacker.png"},
+            {name:"ERROR",rarity:"Uncommon",color:"limegreen",chance:"12.75%",image:"https://i.postimg.cc/br0QkQ72/Error.png"},
+            {name:"Error Spam",rarity:"Uncommon",color:"limegreen",chance:"12.75%",image:"https://i.postimg.cc/nrf4XdPJ/Error-Spam.png"},
+            {name:"Banned",rarity:"Uncommon",color:"limegreen",chance:"12.75%",image:"https://i.postimg.cc/Y9WNqc8R/Banned.png"},
+            {name:"Hacker Bot",rarity:"Rare",color:"Blue",chance:"6.5%",image:"https://i.postimg.cc/63htng1L/Hacker-Bot.png"},
+            {name:"Scripts",rarity:"Rare",color:"Blue",chance:"6.5%",image:"https://i.postimg.cc/1RD0kQ85/Scripts.png"},
+            {name:"Trojan",rarity:"Rare",color:"Blue",chance:"6.5%",image:"https://i.postimg.cc/tg7twnxL/Trojan.png"},
+            {name:"Malware",rarity:"Epic",color:"Red",chance:"3.5%",image:"https://i.postimg.cc/0N3ds5Gr/Malware.png"},
+            {name:"Letter Virus",rarity:"Epic",color:"Red",chance:"3.5%",image:"https://i.postimg.cc/Prz4wjHF/Letter-Virus.png"},
+            {name:"YAAI",rarity:"Legendary",color:"orange",chance:"1.3%",image:"https://i.postimg.cc/yYzjxNMZ/YAAI.png"},
+            {name:"Cybercriminal",rarity:"Chroma",color:"cyan",chance:"0.08%",image:"https://i.postimg.cc/cLxc7b41/Cybercriminal.png"},
+            {name:"ILOVEYOU",rarity:"Chroma",color:"cyan",chance:"0.08%",image:"https://i.postimg.cc/0yV0V0bY/ILOVEYOU.png"},
+            {name:"Dark Web",rarity:"Mystical",color:"#9C27B0",chance:"0.006%",image:"https://i.postimg.cc/4497mTpC/DarkWeb.gif"},
+            
+            
+            
+        ]
+     },
+
+     scratch: { 
+        name: "Scratch Pack",
+        cost: 30,
+        image: "https://i.postimg.cc/cL5hhBbp/Scratch.png",
+        background: "https://i.postimg.cc/7ZWhmKyr/Scratch-Background.png",
+        blooks: [
+            {name:"Code Block",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/pdr8d9PR/Code-Block.png"},
+            {name:"Scratch Apple",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/0N4SK8Nm/Scratch-Apple.png"},
+            {name:"Scratch Cat",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/YCbYkNKd/Scratch-Cat.png"},
+            {name:"Scratch Logo",rarity:"Uncommon",color:"limegreen",chance:"19.5%",image:"https://i.postimg.cc/26BZ4Pqt/Scratch-Logo.png"},
+            {name:"Editor's Cursor",rarity:"Rare",color:"blue",chance:"8.25%",image:"https://i.postimg.cc/5NWwmNSS/Editor-s-Cursor.png"},
+            {name:"Go Symbol",rarity:"Rare",color:"blue",chance:"8.25%",image:"https://i.postimg.cc/0y8DLW36/Go-Symbol.png"},
+            {name:"Stop Symbol",rarity:"Rare",color:"blue",chance:"8.25%",image:"https://i.postimg.cc/h4dLx7TG/Stop-Symbol.png"},
+            {name:"SVG Sprite",rarity:"Epic",color:"red",chance:"5.75%",image:"https://i.postimg.cc/sx75RtsW-/SVG-Sprite.png"},
+            {name:"PNG Sprite",rarity:"Epic",color:"red",chance:"5.75%",image:"https://i.postimg.cc/0QL7F8Rx/PNG-Sprite.png"},
+            {name:"Golden Scratch Logo",rarity:"Legendary",color:"orange",chance:"0.75%",image:"https://i.postimg.cc/Fsb0C5P5/Golden-Scratch-Logo.png"},
+            
+            
+            
+            
+        ]
+     },
+
+     og: { 
+        name: "OG Pack",
+        cost: 35,
+        image: "https://i.postimg.cc/X7ttL5DD/OG.png",
+        background: "https://i.postimg.cc/KjkJ3qFc/Screenshot-18-9-2025-213351-turbowarp-org.jpg",
+        blooks: [
+            {name:"Scratchlet Logo",rarity:"Uncommon",color:"limegreen",chance:"19%",image:"https://i.postimg.cc/xd7xTGvG/Scratchlet-Logo.png"},
+            {name:"Justaguy",rarity:"Uncommon",color:"limegreen",chance:"19%",image:"https://i.postimg.cc/CKdrgrqL/Justaguy.png"},
+            {name:"ItsME",rarity:"Uncommon",color:"limegreen",chance:"19%",image:"https://i.postimg.cc/LX1yqqDc/ItsME.png"},
+            {name:"Noodles",rarity:"Uncommon",color:"limegreen",chance:"19%",image:"https://i.postimg.cc/RZgp2xqD/Noodles.png"},
+            {name:"GhostRider",rarity:"Rare",color:"blue",chance:"8%",image:"https://i.postimg.cc/vZYSPZ8n/ghostrider.webp"},
+            {name:"Doodlyyy",rarity:"Rare",color:"blue",chance:"8%",image:"https://i.postimg.cc/prMsK21p/Doodlyyy.png"},
+            {name:"yugatsuJ",rarity:"Rare",color:"blue",chance:"8%",image:"https://i.postimg.cc/7YDB6Z2R/yugatsuJ.png"},
+            {name:"SOUNDGOD",rarity:"Epic",color:"red",chance:"4%",image:"https://i.postimg.cc/2jncrZVv/SOUNDGOD.png"},
+            {name:"Augustine2025",rarity:"Legendary",color:"orange",chance:"0.6%",image:"https://i.postimg.cc/D0QBgtt5/Augustine.png"},
+            {name:"Ayden",rarity:"Chroma",color:"cyan",chance:"0.08%",image:"https://i.postimg.cc/BQgm1f5n/Ayden.png"},
+            {name:"BlooketWarriorYT",rarity:"Mystical",color:"#9C27B0",chance:"0.007%",image:"https://i.postimg.cc/HnNfGGSm/Blooket-Warrior.gif"},
+            {name:"SuperMemes_64",rarity:"Whimsical",color:"#ff4ae5",chance:"0.0052%",image:"https://i.postimg.cc/x88WFj3g/Super-Memes-64.gif"},
+         
+            
+            
+            
+            
+        ]
+     },
+
+    videogame: { 
+        name: "Video Game Pack",
+        cost: 30,
+        image: "https://i.postimg.cc/Y9YZNpm2/Video-Game.png",
+        background: "https://i.postimg.cc/N0YHGDkv/Video-Game-Background.png",
+        blooks: [
+            {name:"Sans",rarity:"Uncommon",color:"limegreen",chance:"16%",image:"https://i.postimg.cc/C1kXCFfg/Sans.png"},
+            {name:"Bacon Hair",rarity:"Uncommon",color:"limegreen",chance:"16%",image:"https://i.postimg.cc/HxXR0p7D/Bacon-Hair.png"},
+            {name:"Pokeball", rarity:"Uncommon",color:"limegreen",chance:"16%",image:"https://i.postimg.cc/s2tbZB1D/Pokeball.png"},
+            {name:"Pacman", rarity:"Uncommon",color:"limegreen",chance:"16%",image:"https://i.postimg.cc/s2tbZB1j/Pacman.png"},
+            {name:"Noob", rarity:"Rare",color:"blue",chance:"8%",image:"https://i.postimg.cc/hjT68S7P/Noob.png"},
+            {name:"Pong", rarity:"Rare",color:"blue",chance:"8%",image:"https://i.postimg.cc/1tw209Ny/Pong.png"},
+            {name:"Kirby", rarity:"Rare",color:"blue",chance:"8%",image:"https://i.postimg.cc/JnZv31Bw/Kirby.png"},
+            {name:"Astro Bot", rarity:"Epic",color:"red",chance:"6%",image:"https://i.postimg.cc/YSJTm4jp/Astro-Bot.png"},
+            {name:"Snake", rarity:"Epic",color:"red",chance:"6%",image:"https://i.postimg.cc/9fvsq406/Snake.png"},
+            {name:"Snake.io", rarity:"Epic",color:"red",chance:"6%",image:"https://i.postimg.cc/rpv7tdzc/Snake-io.png"},
+            {name:"Piggy",rarity:"Legendary",color:"orange",chance:"1.8%",image:"https://i.postimg.cc/TPZBWy1s/Piggy.png"},
+            {name:"Golden Pacman",rarity:"Chroma",color:"cyan",chance:"0.07%",image:"https://i.postimg.cc/1zLbNgXj/Golden-Pacman.png"},
+            {name:"Keeby",rarity:"Chroma",color:"cyan",chance:"0.05%",image:"https://i.postimg.cc/R0j2n3q4/Keeby.png"},
+            {name:"Stud",rarity:"Chroma",color:"cyan",chance:"0.04%",image:"https://i.postimg.cc/GhHP6Xq2/Stud.png"},
+            {name:"Red Piggy",rarity:"Chroma",color:"cyan",chance:"0.04%",image:"https://i.postimg.cc/tgL8V1Jm/Red-Piggy.png"},
+            {name:"The Souls",rarity:"Mystical",color:"#9C27B0",chance:"0.008%",image:"https://i.postimg.cc/YqzRh6Bx/The-Souls-Backup.gif"}
+        ]
+     },
+
+    
+   
+};
+
+let currentPack = null;
+let currentPackButton = null;
+let openingInProgress = false;
+const resultsContainer = document.getElementById("resultsContainer");
+const modal = document.getElementById("confirmModal");
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const infoBtn = document.getElementById("infoBtn");
+const overlay = document.getElementById("overlay");
+const infoModal = document.getElementById("infoModal");
+const rarityList = document.getElementById("rarityList");
+const addCoinBtn = document.getElementById("addCoinBtn");
+const instantToggleBtn = document.getElementById("instantToggleBtn");
+let instantOpen = false;
+
+// --- Overlay helpers ---
+function showOverlay(){overlay.classList.add("active");}
+function hideOverlay(){overlay.classList.remove("active");}
+function closeInfoModal(){infoModal.style.display="none"; modal.style.display="flex";}
+
+// --- Add Coin Button init ---
+function initAddCoinButton(){
+    const userData=loadUserData();
+    if(userData.username==='SuperMemes_64'){addCoinBtn.style.display='inline-block';}
+    addCoinBtn.addEventListener('click',()=>{
+        const userData=loadUserData();
+        userData.coins+=500;
+        saveUserData(userData);
+        loadUserData();
+    });
+}
+
+// --- Toggle instant ---
+instantToggleBtn.addEventListener("click",()=>{
+    instantOpen=!instantOpen;
+    instantToggleBtn.textContent = instantOpen ? "Instant: ON" : "Instant: OFF";
+});
+
+// helper to enable/disable all pack open buttons
+function setPackButtonsDisabled(disabled){
+    document.querySelectorAll('.card .open-btn').forEach(b=>b.disabled = disabled);
+    addCoinBtn.disabled = disabled;
+}
+
+// --- Weighted random selection ---
+function getWeightedRandomBlook(pack){
+    const total = pack.blooks.reduce((sum,b)=>sum + parseFloat(b.chance),0);
+    let r = Math.random()*total;
+    for(const b of pack.blooks){
+        r -= parseFloat(b.chance);
+        if(r <= 0) return b;
+    }
+    return pack.blooks[pack.blooks.length-1];
+}
+
+// --- Start pack flow ---
+function startPack(packKey, btn){
+    currentPack = packs[packKey];
+    currentPackButton = btn || null;
+    if(openingInProgress) return;
+    const userData = loadUserData();
+    if(userData.coins < currentPack.cost){ showNotEnoughCoins(); return; }
+    document.getElementById("modalText").textContent = `Want to open ${currentPack.name} for ${currentPack.cost} coins?`;
+    if(instantOpen){ openPack(); } else { modal.style.display="flex"; showOverlay(); }
+}
+
+// --- Modal handlers ---
+yesBtn.addEventListener("click",()=>{ modal.style.display="none"; openPack(); });
+noBtn.addEventListener("click",()=>{ modal.style.display="none"; hideOverlay(); });
+infoBtn.addEventListener("click",()=>{
+    rarityList.innerHTML="";
+    if(!currentPack){
+        Object.values(packs).forEach(p=>{
+            p.blooks.forEach(b=>{
+                const li=document.createElement("li");
+                li.style.color=b.color; li.style.fontWeight="bold"; li.style.margin="8px 0";
+                li.textContent=`${b.name} — ${b.chance}`;
+                rarityList.appendChild(li);
+            });
+        });
+    } else {
+        currentPack.blooks.forEach(b=>{
+            const li=document.createElement("li");
+            li.style.color=b.color; li.style.fontWeight="bold"; li.style.margin="8px 0";
+            li.textContent=`${b.name} — ${b.chance}`;
+            rarityList.appendChild(li);
+        });
+    }
+    modal.style.display="none";
+    infoModal.style.display="flex";
+});
+
+// --- Not Enough Coins ---
+function showNotEnoughCoins() {
+    hideOverlay();
+    const modalText = document.getElementById("modalText");
+    modalText.textContent = "Not Enough Coins!";
+    modal.style.display = "flex";
+    showOverlay();
+    yesBtn.style.display = "none";
+    infoBtn.style.display = "none";
+    noBtn.textContent = "Close";
+    const closeHandler = () => {
+        modal.style.display = "none"; hideOverlay();
+        yesBtn.style.display = "inline-block"; infoBtn.style.display = "inline-block";
+        noBtn.textContent = "No";
+        noBtn.onclick = () => { modal.style.display = "none"; hideOverlay(); };
+        noBtn.removeEventListener('click', closeHandler);
+    };
+    noBtn.onclick = null;
+    noBtn.addEventListener('click', closeHandler, {once:true});
+}
+
+// --- Open Pack ---
+function openPack(){
+    if(!currentPack) return;
+    openingInProgress=true;
+    setPackButtonsDisabled(true);
+    if(currentPackButton) currentPackButton.disabled = true;
+    showOverlay();
+
+    const previous=resultsContainer.querySelector(".result-card");
+    if(previous) previous.remove();
+
+    const blook = getWeightedRandomBlook(currentPack);
+    updateUserStats(blook, currentPack.cost);
+
+    const animationSprite=document.createElement("img");
+    animationSprite.src=currentPack.image || "";
+    animationSprite.style.position="fixed";
+    animationSprite.style.top="50%"; animationSprite.style.left="50%";
+    animationSprite.style.width="350px"; animationSprite.style.height="350px";
+    animationSprite.style.objectFit="cover"; animationSprite.style.borderRadius="20px";
+    animationSprite.style.transform="translate(-50%,-50%) scale(0)";
+    animationSprite.style.transition="transform 0.4s ease-out, opacity 0.4s ease-out";
+    animationSprite.style.zIndex="2004";
+    document.body.appendChild(animationSprite);
+
+    requestAnimationFrame(()=>{ animationSprite.style.transform="translate(-50%,-50%) scale(1)"; });
+    let autoOpenTimeout = setTimeout(()=> animationSprite.click(), 3000);
+
+    animationSprite.addEventListener("click", ()=>{
+        clearTimeout(autoOpenTimeout);
+        animationSprite.style.transition="transform 0.6s ease-in-out, opacity 0.6s ease-in-out";
+        animationSprite.style.transform="translate(-50%,-50%) scale(0) rotate(720deg)";
+        animationSprite.style.opacity="0";
+        animationSprite.addEventListener("transitionend", ()=>{
+            animationSprite.remove();
+            createResultCard(blook, currentPack);
+        }, {once:true});
+    }, {once:true});
+}
+
+// --- Result Card + Confetti ---
+function createResultCard(blook, pack){
+    const previousCanvas = document.querySelector(".confetti-canvas");
+    if(previousCanvas) previousCanvas.remove();
+
+    const canvas = document.createElement("canvas");
+    canvas.classList.add("confetti-canvas");
+    canvas.style.position="fixed"; canvas.style.top=0; canvas.style.left=0; canvas.style.width="100%"; canvas.style.height="100%"; canvas.style.pointerEvents="none"; canvas.style.zIndex="2001";
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext("2d");
+    let w = canvas.width = window.innerWidth;
+    let h = canvas.height = window.innerHeight;
+    window.addEventListener('resize', ()=>{ w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; });
+
+    let particles = [];
+    const shapes = ['circle','square','triangle'];
+    function createParticles(){
+        particles = [];
+        for(let i=0;i<150;i++){
+            particles.push({
+                x:Math.random()*w,
+                y:Math.random()*h-100,
+                r:Math.random()*10+6,
+                d:Math.random()*50,
+                color:blook.color,
+                tilt:Math.random()*10-10,
+                tiltAngleIncrement:Math.random()*0.07+0.05,
+                tiltAngle:0,
+                rotation: Math.random() * 2 * Math.PI,
+                rotationSpeed: Math.random() * 0.1 - 0.05,
+                shape: shapes[Math.floor(Math.random()*shapes.length)]
+            });
+        }
+    }
+    createParticles();
+    let confettiAnimation;
+    function draw(){
+        ctx.clearRect(0,0,w,h);
+        for(let i=0;i<particles.length;i++){
+            let p=particles[i];
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rotation);
+            ctx.fillStyle=p.color;
+            ctx.beginPath();
+            if(p.shape==='circle') ctx.arc(0,0,p.r,0,Math.PI*2);
+            else if(p.shape==='square') ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r);
+            else if(p.shape==='triangle'){ctx.moveTo(0,-p.r); ctx.lineTo(-p.r,p.r); ctx.lineTo(p.r,p.r); ctx.closePath();}
+            ctx.fill();
+            ctx.restore();
+            p.rotation += p.rotationSpeed;
+            p.tiltAngle += p.tiltAngleIncrement;
+            p.y += (Math.cos(p.d) + 3 + p.r/2)/2;
+            p.x += Math.sin(p.tiltAngle);
+            if(p.y>h){p.y=-10; p.x=Math.random()*w;}
+        }
+        confettiAnimation = requestAnimationFrame(draw);
+    }
+    draw();
+
+    const resultCard=document.createElement("div");
+    resultCard.classList.add("result-card");
+    resultCard.style.backgroundImage = `url(${pack.background || ''})`;
+    resultCard.style.backgroundSize="cover"; resultCard.style.backgroundPosition="center"; resultCard.style.backgroundRepeat="no-repeat";
+    resultCard.innerHTML=`
+        <div style="display:flex; flex-direction:column; height:100%; justify-content:space-between; align-items:center; padding:10px; color:black; text-shadow:1px 1px 2px white;">
+            <div style="text-align:center;">
+                <h2 style="margin:0; font-size:1.6rem; font-family:'Titan One';">${blook.name}</h2>
+                <h3 style="margin:0; font-size:1.2rem; font-family:'Titan One'; color:${blook.color}; -webkit-text-stroke:1px black;">${blook.rarity}</h3>
+            </div>
+            <img src="${blook.image}" alt="${blook.name}" style="width:50%; border-radius:10px;">
+            <p style="margin:0; font-weight:bold; font-size:1.4rem;">${blook.chance}</p>
+        </div>
+    `;
+    resultsContainer.appendChild(resultCard);
+
+    setTimeout(()=>{
+        resultCard.classList.add("show");
+        const hideResult = () => {
+            resultCard.classList.remove("show");
+            resultCard.classList.add("hide");
+            setTimeout(()=>{
+                resultCard.remove();
+                cancelAnimationFrame(confettiAnimation);
+                canvas.remove();
+                hideOverlay();
+                openingInProgress=false;
+                setPackButtonsDisabled(false);
+            },300);
+        };
+        setTimeout(()=>{ resultCard.addEventListener("click", hideResult, {once:true}); },500);
+    },100);
+};
+// ------------------- Robust Background Sync -------------------
+(function(){
+  // Utility helpers
+  function safeJSONParse(str){
+    try { return JSON.parse(str); } catch(e) { return null; }
+  }
+
+  function hexToRgb(hex){
+    if(!hex) return null;
+    hex = hex.replace('#','').trim();
+    if(hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+    if(hex.length !== 6) return null;
+    const num = parseInt(hex, 16);
+    return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
+  }
+
+  function hslToRgb(h, s, l){
+    // h: 0-360, s: 0-100, l: 0-100
+    h = Number(h);
+    s = Number(s) / 100;
+    l = Number(l) / 100;
+    const c = (1 - Math.abs(2*l - 1)) * s;
+    const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+    const m = l - c/2;
+    let r1=0, g1=0, b1=0;
+    if (0 <= h && h < 60) { r1 = c; g1 = x; b1 = 0; }
+    else if (60 <= h && h < 120) { r1 = x; g1 = c; b1 = 0; }
+    else if (120 <= h && h < 180) { r1 = 0; g1 = c; b1 = x; }
+    else if (180 <= h && h < 240) { r1 = 0; g1 = x; b1 = c; }
+    else if (240 <= h && h < 300) { r1 = x; g1 = 0; b1 = c; }
+    else { r1 = c; g1 = 0; b1 = x; }
+    const r = Math.round((r1 + m) * 255);
+    const g = Math.round((g1 + m) * 255);
+    const b = Math.round((b1 + m) * 255);
+    return [r,g,b];
+  }
+
+  function hslString(h,s,l) { return `hsl(${h}, ${s}%, ${l}%)`; }
+
+  function parseColorDescriptor(desc){
+    // desc could be: object {h,s,l} OR "#rrggbb" OR "hsl(..)" string
+    if(!desc && desc !== 0) return null;
+    if(typeof desc === 'object' && desc.h !== undefined && desc.s !== undefined && desc.l !== undefined){
+      return { kind: 'hslObj', h: Number(desc.h), s: Number(desc.s), l: Number(desc.l) };
+    }
+    if(typeof desc === 'string'){
+      const s = desc.trim();
+      if(s[0] === '#') return { kind:'hex', hex: s };
+      const m = s.match(/hsl\(\s*([0-9.]+)[,\s]+([0-9.]+)%[,\s]+([0-9.]+)%\s*\)/i);
+      if(m) return { kind:'hslStr', h: Number(m[1]), s: Number(m[2]), l: Number(m[3]) };
+      // maybe it's a bare hex without '#'
+      if(/^([0-9a-f]{6}|[0-9a-f]{3})$/i.test(s)) return { kind:'hex', hex:'#' + s };
+    }
+    return null;
+  }
+
+  function colorToRgbArray(descriptor){
+    if(!descriptor) return null;
+    if(descriptor.kind === 'hex') return hexToRgb(descriptor.hex);
+    if(descriptor.kind === 'hslStr' || descriptor.kind === 'hslObj') return hslToRgb(descriptor.h, descriptor.s, descriptor.l);
+    return null;
+  }
+
+  function cssColorForDescriptor(descriptor){
+    if(!descriptor) return null;
+    if(descriptor.kind === 'hex') return descriptor.hex;
+    if(descriptor.kind === 'hslStr' || descriptor.kind === 'hslObj') return hslString(descriptor.h, descriptor.s, descriptor.l);
+    return null;
+  }
+
+  function buildAndApplyBackground(rawApplied, rawFallback){
+    try {
+      // parse appliedColors (could be null)
+      let applied = null;
+      if(rawApplied){
+        applied = typeof rawApplied === 'string' ? safeJSONParse(rawApplied) : rawApplied;
+      }
+
+      // rawFallback: backgroundColor (single color string)
+      const fallbackColor = rawFallback || null;
+
+      let primaryDesc = null, secondaryDesc = null;
+
+      // if applied exists and has primary/secondary
+      if(applied && applied.primary && applied.secondary){
+        primaryDesc = parseColorDescriptor(applied.primary);
+        secondaryDesc = parseColorDescriptor(applied.secondary);
+      } else if(applied && applied.primary && !applied.secondary){
+        primaryDesc = parseColorDescriptor(applied.primary);
+        secondaryDesc = primaryDesc;
+      } else if(typeof applied === 'string' || (applied && applied.toString && typeof applied.toString === 'string')){
+        // applied might be a single color string
+        primaryDesc = parseColorDescriptor(applied);
+        secondaryDesc = primaryDesc;
+      }
+
+      // If still no descriptors, try fallback single color
+      if(!primaryDesc && fallbackColor){
+        primaryDesc = parseColorDescriptor(fallbackColor);
+        secondaryDesc = primaryDesc;
+      }
+
+      // final fallback to default orange
+      if(!primaryDesc || !secondaryDesc){
+        const def1 = parseColorDescriptor('#FF8C00');
+        const def2 = parseColorDescriptor('#FFA500');
+        primaryDesc = primaryDesc || def1;
+        secondaryDesc = secondaryDesc || def2;
+      }
+
+      // grid colors need RGB arrays for rgba(...)
+      const gridPrimaryRgb = colorToRgbArray(primaryDesc) || [210,180,140];
+      const gridSecondaryRgb = colorToRgbArray(secondaryDesc) || [210,180,140];
+
+      const gridPrimary = `rgba(${gridPrimaryRgb.join(',')},0.15)`;
+      const gridSecondary = `rgba(${gridSecondaryRgb.join(',')},0.15)`;
+
+      // gradient stop colors (use original hex or hsl)
+      const gradientPrimary = cssColorForDescriptor(primaryDesc) || '#FF8C00';
+      const gradientSecondary = cssColorForDescriptor(secondaryDesc) || '#FFA500';
+
+      const bg = `linear-gradient(${gridPrimary} 1px, transparent 1px),
+                  linear-gradient(90deg, ${gridSecondary} 1px, transparent 1px),
+                  linear-gradient(135deg, ${gradientPrimary} 0%, ${gradientSecondary} 100%)`;
+
+      document.body.style.background = bg;
+      document.body.style.backgroundSize = "40px 40px";
+    } catch (err) {
+      // on error fallback to defaults
+      document.body.style.background = `linear-gradient(rgba(210,180,140,0.15) 1px, transparent 1px),
+                  linear-gradient(90deg, rgba(210,180,140,0.15) 1px, transparent 1px),
+                  linear-gradient(135deg, #FF8C00 0%, #FFA500 100%)`;
+      console.error('Error applying background:', err);
+    }
+  }
+
+  function applyFromStorageNow(){
+    const rawApplied = localStorage.getItem('appliedColors');
+    const rawBg = localStorage.getItem('backgroundColor');
+    buildAndApplyBackground(rawApplied, rawBg);
+  }
+
+  // initial apply
+  document.addEventListener('DOMContentLoaded', applyFromStorageNow);
+
+  // live update when other tab changes settings
+  window.addEventListener('storage', (e)=>{
+    if(e.key === 'appliedColors' || e.key === 'backgroundColor'){
+      buildAndApplyBackground(localStorage.getItem('appliedColors'), localStorage.getItem('backgroundColor'));
+    }
+  });
+
+})();
+</script>
+</div>
