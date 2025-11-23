@@ -1,3 +1,4 @@
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -402,6 +403,13 @@ body {
         <h2 class="pack-name">OG Pack</h2>
         <p class="pack-price">Price: 35 coins</p>
         <button class="open-btn" onclick="startPack('og', this)">🪙 Open</button>
+    </div>
+    
+    <div class="card">
+        <img src="https://i.postimg.cc/HL8F2JnC/Add-tokens.png" alt="Debug Pack">
+        <h2 class="pack-name">Debug Pack</h2>
+        <p class="pack-price">Price: -500 coins</p>
+        <button class="open-btn" onclick="startPack('debug', this)">Open</button>
     </div>
 </div>
 
@@ -1085,6 +1093,17 @@ const packs = {
             {name:"Stud",rarity:"Chroma",color:"cyan",chance:"0.04%",image:"https://i.postimg.cc/GhHP6Xq2/Stud.png"},
             {name:"Red Piggy",rarity:"Chroma",color:"cyan",chance:"0.04%",image:"https://i.postimg.cc/tgL8V1Jm/Red-Piggy.png"},
             {name:"The Souls",rarity:"Mystical",color:"#9C27B0",chance:"0.008%",image:"https://i.postimg.cc/YqzRh6Bx/The-Souls-Backup.gif"}
+        ]
+     },
+     
+    debug: { 
+        name: "Debug Pack",
+        cost: -500,
+        image: "https://i.postimg.cc/HL8F2JnC/Add-tokens.png",
+        background: "https://i.postimg.cc/KjkJ3qFc/Screenshot-18-9-2025-213351-turbowarp-org.jpg",
+        blooks: [
+            {name:"+500 Tokens",rarity:"N/A",color:"Grey",chance:"100%",image:"https://i.postimg.cc/d1fDSrWL/Treasure-Chest.png"},
+            
         ]
      },
 
